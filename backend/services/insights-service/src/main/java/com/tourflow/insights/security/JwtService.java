@@ -1,4 +1,4 @@
-package com.tourflow.analytics.security;
+package com.tourflow.insights.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

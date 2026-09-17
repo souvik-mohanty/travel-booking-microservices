@@ -1,9 +1,9 @@
-package com.tourflow.support.controller;
+package com.tourflow.engagement.support.controller;
 
-import com.tourflow.support.domain.TicketStatus;
-import com.tourflow.support.dto.CreateTicketRequest;
-import com.tourflow.support.dto.TicketResponse;
-import com.tourflow.support.service.SupportTicketService;
+import com.tourflow.engagement.support.domain.TicketStatus;
+import com.tourflow.engagement.support.dto.CreateTicketRequest;
+import com.tourflow.engagement.support.dto.TicketResponse;
+import com.tourflow.engagement.support.service.SupportTicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,11 +1,11 @@
-package com.tourflow.business.controller;
+package com.tourflow.catalog.business.controller;
 
-import com.tourflow.business.dto.ActivityResponse;
-import com.tourflow.business.dto.BusinessResponse;
-import com.tourflow.business.dto.CreateBusinessRequest;
-import com.tourflow.business.dto.UpdateBusinessRequest;
-import com.tourflow.business.service.ActivityService;
-import com.tourflow.business.service.BusinessService;
+import com.tourflow.catalog.business.dto.ActivityResponse;
+import com.tourflow.catalog.business.dto.BusinessResponse;
+import com.tourflow.catalog.business.dto.CreateBusinessRequest;
+import com.tourflow.catalog.business.dto.UpdateBusinessRequest;
+import com.tourflow.catalog.business.service.ActivityService;
+import com.tourflow.catalog.business.service.BusinessService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +93,27 @@ public class BusinessController {
 
         return ResponseEntity.ok(
                 activityService.getActivitiesForBusiness(businessId)
+        );
+    }
+
+    // Admin moderation -- see SecurityConfig for the ADMIN-role gate.
+    @PatchMapping("/{id}/suspend")
+    public ResponseEntity<BusinessResponse> suspendBusiness(
+            @PathVariable UUID id
+    ) {
+
+        return ResponseEntity.ok(
+                businessService.suspendBusiness(id)
+        );
+    }
+
+    @PatchMapping("/{id}/reinstate")
+    public ResponseEntity<BusinessResponse> reinstateBusiness(
+            @PathVariable UUID id
+    ) {
+
+        return ResponseEntity.ok(
+                businessService.reinstateBusiness(id)
         );
     }
 }

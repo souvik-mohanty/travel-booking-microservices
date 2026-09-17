@@ -1,11 +1,13 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type CSSProperties, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { searchTours } from '../api/search'
 import { AppLayout } from '../components/AppLayout'
+import { useAuth } from '../context/AuthContext'
 import { formatDateRange, formatMoney } from '../lib/format'
 import type { TourSearchResult } from '../types/search'
 
 export function ToursPage() {
+  const { user } = useAuth()
   const [q, setQ] = useState('')
   const [destination, setDestination] = useState('')
   const [minPrice, setMinPrice] = useState('')
@@ -49,12 +51,14 @@ export function ToursPage() {
     <AppLayout>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Browse Tours</h1>
-        <Link
-          to="/tours/new"
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
-        >
-          Create a tour
-        </Link>
+        {user?.role === 'BUSINESS' && (
+          <Link
+            to="/tours/new"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 dark:bg-blue-500 dark:text-white"
+          >
+            Create a tour
+          </Link>
+        )}
       </div>
 
       <form
@@ -93,7 +97,7 @@ export function ToursPage() {
         />
         <button
           type="submit"
-          className="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 sm:col-span-5"
+          className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 dark:bg-blue-500 dark:text-white sm:col-span-5"
         >
           Search
         </button>
@@ -104,10 +108,15 @@ export function ToursPage() {
 
       {!loading && !error && results.length === 0 && (
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          No published tours match your search yet. Try clearing the filters, or{' '}
-          <Link to="/tours/new" className="underline">
-            create one
-          </Link>
+          No published tours match your search yet. Try clearing the filters
+          {user?.role === 'BUSINESS' && (
+            <>
+              , or{' '}
+              <Link to="/tours/new" className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
+                create one
+              </Link>
+            </>
+          )}
           .
         </p>
       )}
@@ -116,11 +125,12 @@ export function ToursPage() {
         <>
           <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">{totalResults} tour(s) found</p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((tour) => (
+            {results.map((tour, index) => (
               <Link
                 key={tour.id}
                 to={`/tours/${tour.id}`}
-                className="rounded-lg border border-slate-200 bg-white p-4 transition hover:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-600"
+                style={{ '--tf-delay': index % 9 } as CSSProperties}
+                className="animate-fade-in-up animate-stagger rounded-lg border border-slate-200 bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:border-blue-400 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500"
               >
                 <h2 className="font-semibold text-slate-900 dark:text-slate-100">{tour.title}</h2>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{tour.destination}</p>

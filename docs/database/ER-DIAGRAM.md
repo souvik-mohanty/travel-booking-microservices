@@ -6,7 +6,7 @@ across schemas owned by different services, and even within one service
 schema, cross-service references are deliberately just UUIDs validated (or
 not) via a REST call at write time. Real FK constraints only exist for
 relationships *within* a single service's schema (e.g., `Room.hotel_id ->
-Hotel.id`, both in `hotel_service`).
+Hotel.id`, both in `catalog_service`).
 
 ```mermaid
 erDiagram
@@ -44,25 +44,33 @@ erDiagram
 
 | From (service) | Column | To (service) | Verified how |
 |---|---|---|---|
-| booking-service.Booking | `tour_id` | tour-service.Tour | `TourClient` call at booking creation (fetches real price) |
+| booking-service.Booking | `tour_id` | catalog-service.Tour | `TourClient` call at booking creation (fetches real price) |
 | payment-service.Payment | `booking_id` | booking-service.Booking | `BookingClient` call at payment creation (fetches real amount, verifies ownership) |
-| trip-service.Trip | `booking_id` | booking-service.Booking | `BookingClient` call at trip creation (verifies booking exists + ownership) |
-| review-service.Review | `booking_id` | booking-service.Booking | `BookingClient` call (verifies booking is `COMPLETED` + ownership) |
-| review-service.Review | `business_id`, `activity_id` | business-service.Business/Activity | `BusinessClient` calls (verifies business exists, activity belongs to it) |
-| review-service.Review | -- | booking.tour_id / activity | **Not verified.** There's no established relationship between tour-service's `Tour` and business-service's `Activity` -- they're parallel concepts from separate build sessions. Deliberately not faked; see review-service's `ReviewService.createReview` comment. |
-| business-service.Activity | `business_id` | (same schema) business-service.Business | Real FK constraint (`fk_activities_business`) |
-| hotel-service.Room | `hotel_id` | (same schema) hotel-service.Hotel | Real FK constraint (`fk_rooms_hotel`) |
-| ride-service.RideBooking | `ride_id` | (same schema) ride-service.Ride | Real FK constraint (`fk_ride_bookings_ride`) |
-| tracking-service.TripLocation | `trip_id` | trip-service.Trip | **Not verified** -- no cross-service check on write (scoped-down v1, see `SERVICE-BOUNDARIES.md`) |
-| trip-service.Trip | `driver_id` | driver-service.Driver | **Not verified** -- assigned by trip ID reference only, no existence check |
-| trip-service.Trip | `vehicle_id` | fleet-service.Vehicle | **Not verified** -- same as above |
-| authorization-service.UserRole | `user_id` | identity-service.User | Not verified -- any UUID accepted, no existence check |
-| driver-service.Driver | `user_id` | identity-service.User | Not verified at write time, but is the JWT's own subject (self-registration) |
+| mobility-service.Trip | `booking_id` | booking-service.Booking | `BookingClient` call at trip creation (verifies booking exists + ownership) |
+| engagement-service.Review | `booking_id` | booking-service.Booking | `BookingClient` call (verifies booking is `COMPLETED` + ownership) |
+| engagement-service.Review | `business_id`, `activity_id` | catalog-service.Business/Activity | `BusinessClient` calls (verifies business exists, activity belongs to it) |
+| engagement-service.Review | -- | booking.tour_id / activity | **Not verified.** There's no established relationship between catalog-service's `Tour` and catalog-service's `Activity` -- they're parallel concepts from separate build sessions. Deliberately not faked; see engagement-service's `ReviewService.createReview` comment. |
+| catalog-service.Activity | `business_id` | (same schema) catalog-service.Business | Real FK constraint (`fk_activities_business`) |
+| catalog-service.Room | `hotel_id` | (same schema) catalog-service.Hotel | Real FK constraint (`fk_rooms_hotel`) |
+| mobility-service.RideBooking | `ride_id` | (same schema) mobility-service.Ride | Real FK constraint (`fk_ride_bookings_ride`) |
+| mobility-service.TripLocation | `trip_id` | (same schema) mobility-service.Trip | **Not verified** -- no ownership check on write (scoped-down v1, see `SERVICE-BOUNDARIES.md`) |
+| mobility-service.Trip | `driver_id` | (same schema) mobility-service.Driver | **Not verified** -- assigned by ID reference only, no existence check |
+| mobility-service.Trip | `vehicle_id` | (same schema) mobility-service.Vehicle | **Not verified** -- same as above |
+| identity-service.UserRole | `user_id` | (same schema) identity-service.User | Not verified -- any UUID accepted, no existence check |
+| mobility-service.Driver | `user_id` | identity-service.User | Not verified at write time, but is the JWT's own subject (self-registration) |
 
-The "not verified" rows are honest gaps, not oversights papered over --
-each one is a real service-to-service integration that would need its own
-design pass (an `IdentityClient`? a `DriverClient` in trip-service?) rather
-than being bolted on as a side effect of an unrelated feature.
+The "not verified" rows are honest gaps, not oversights papered over. Three
+of them (`TripLocation`/`Trip`/`Vehicle`/`Driver`, `UserRole`/`User`) became
+same-schema references as a side effect of the 2026-09-06 service
+consolidation (`ADR-002-SERVICE-CONSOLIDATION.md`) -- they're now a real FK
+constraint away from being verified, not a cross-service integration
+project. They're left unverified here deliberately: fixing them wasn't part
+of that consolidation's scope, and adding FK constraints or ownership
+checks as a side effect of an unrelated merge would blur what actually
+changed. The remaining gaps genuinely do need cross-service work: identity-
+service's `User` is a different service from mobility-service's `Driver`,
+so verifying `Driver.user_id` at write time would need an `IdentityClient`
+mobility-service doesn't have yet.
 
 ## Why no cross-schema foreign keys
 

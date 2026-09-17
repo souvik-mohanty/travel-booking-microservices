@@ -1,9 +1,10 @@
-package com.tourflow.analytics.service;
+package com.tourflow.insights.service;
 
-import com.tourflow.analytics.domain.BookingEventLog;
-import com.tourflow.analytics.dto.BookingSummaryResponse;
-import com.tourflow.analytics.dto.DailyBookingStatsResponse;
-import com.tourflow.analytics.repository.BookingEventLogRepository;
+import com.tourflow.insights.domain.BookingEventLog;
+import com.tourflow.insights.dto.BookingSummaryResponse;
+import com.tourflow.insights.dto.DailyBookingStatsResponse;
+import com.tourflow.insights.dto.TourBookingStatsResponse;
+import com.tourflow.insights.repository.BookingEventLogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -82,6 +83,17 @@ public class AnalyticsService {
         return bookingEventLogRepository.findDailyStats(fromInclusive, toExclusive)
                 .stream()
                 .map(DailyBookingStatsResponse::from)
+                .toList();
+    }
+
+    // "Business analytics": bookings/revenue per tour, highest revenue
+    // first. The frontend resolves each tourId's title/destination/owner via
+    // tour-service before displaying this.
+    @Transactional(readOnly = true)
+    public List<TourBookingStatsResponse> getStatsByTour() {
+        return bookingEventLogRepository.findStatsByTour()
+                .stream()
+                .map(TourBookingStatsResponse::from)
                 .toList();
     }
 }

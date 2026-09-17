@@ -1,13 +1,13 @@
-package com.tourflow.support.service;
+package com.tourflow.engagement.support.service;
 
-import com.tourflow.support.domain.SupportTicket;
-import com.tourflow.support.domain.TicketStatus;
-import com.tourflow.support.dto.CreateTicketRequest;
-import com.tourflow.support.dto.TicketResponse;
-import com.tourflow.support.exception.InvalidTicketStateException;
-import com.tourflow.support.exception.TicketAccessDeniedException;
-import com.tourflow.support.exception.TicketNotFoundException;
-import com.tourflow.support.repository.SupportTicketRepository;
+import com.tourflow.engagement.support.domain.SupportTicket;
+import com.tourflow.engagement.support.domain.TicketStatus;
+import com.tourflow.engagement.support.dto.CreateTicketRequest;
+import com.tourflow.engagement.support.dto.TicketResponse;
+import com.tourflow.engagement.support.exception.InvalidTicketStateException;
+import com.tourflow.engagement.support.exception.TicketAccessDeniedException;
+import com.tourflow.engagement.support.exception.TicketNotFoundException;
+import com.tourflow.engagement.support.repository.SupportTicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

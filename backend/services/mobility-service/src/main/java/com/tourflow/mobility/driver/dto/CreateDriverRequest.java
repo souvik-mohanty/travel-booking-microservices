@@ -1,4 +1,4 @@
-package com.tourflow.driver.dto;
+package com.tourflow.mobility.driver.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;

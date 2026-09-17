@@ -1,9 +1,9 @@
-package com.tourflow.authorization.controller;
+package com.tourflow.identity.authorization.controller;
 
-import com.tourflow.authorization.dto.AssignRoleRequest;
-import com.tourflow.authorization.dto.PermissionResponse;
-import com.tourflow.authorization.dto.RoleResponse;
-import com.tourflow.authorization.service.AuthorizationService;
+import com.tourflow.identity.authorization.dto.AssignRoleRequest;
+import com.tourflow.identity.authorization.dto.PermissionResponse;
+import com.tourflow.identity.authorization.dto.RoleResponse;
+import com.tourflow.identity.authorization.service.AuthorizationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

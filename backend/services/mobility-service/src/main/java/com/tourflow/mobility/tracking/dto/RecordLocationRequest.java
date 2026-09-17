@@ -1,4 +1,4 @@
-package com.tourflow.tracking.dto;
+package com.tourflow.mobility.tracking.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

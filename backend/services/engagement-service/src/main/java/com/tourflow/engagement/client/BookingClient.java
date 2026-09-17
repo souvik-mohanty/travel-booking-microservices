@@ -1,7 +1,7 @@
-package com.tourflow.review.client;
+package com.tourflow.engagement.client;
 
-import com.tourflow.review.exception.ExternalServiceException;
-import com.tourflow.review.exception.ReviewValidationException;
+import com.tourflow.engagement.exception.ExternalServiceException;
+import com.tourflow.engagement.exception.ReviewValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

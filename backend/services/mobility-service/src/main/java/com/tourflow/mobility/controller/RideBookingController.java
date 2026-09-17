@@ -1,8 +1,8 @@
-package com.tourflow.ride.controller;
+package com.tourflow.mobility.controller;
 
-import com.tourflow.ride.dto.BookSeatsRequest;
-import com.tourflow.ride.dto.RideBookingResponse;
-import com.tourflow.ride.service.RideBookingService;
+import com.tourflow.mobility.dto.BookSeatsRequest;
+import com.tourflow.mobility.dto.RideBookingResponse;
+import com.tourflow.mobility.service.RideBookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

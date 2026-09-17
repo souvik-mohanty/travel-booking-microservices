@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.tourflow</groupId>
-	<artifactId>notification-service</artifactId>
+	<artifactId>platform-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>notification-service</name>
-	<description/>
+	<name>platform-service</name>
+	<description>Notification and file storage (merged notification-service + file-service)</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -33,6 +33,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,4 +1,4 @@
-package com.tourflow.review.domain;
+package com.tourflow.engagement.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

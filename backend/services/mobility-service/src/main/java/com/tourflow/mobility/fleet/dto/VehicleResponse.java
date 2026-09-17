@@ -1,6 +1,6 @@
-package com.tourflow.fleet.dto;
+package com.tourflow.mobility.fleet.dto;
 
-import com.tourflow.fleet.domain.Vehicle;
+import com.tourflow.mobility.fleet.domain.Vehicle;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

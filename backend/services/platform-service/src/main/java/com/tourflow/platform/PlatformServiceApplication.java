@@ -1,13 +1,13 @@
-package com.tourflow.notification;
+package com.tourflow.platform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NotificationServiceApplication {
+public class PlatformServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NotificationServiceApplication.class, args);
+		SpringApplication.run(PlatformServiceApplication.class, args);
 	}
 
 }

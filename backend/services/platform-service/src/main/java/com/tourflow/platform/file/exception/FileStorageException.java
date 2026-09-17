@@ -1,4 +1,4 @@
-package com.tourflow.file.exception;
+package com.tourflow.platform.file.exception;
 
 public class FileStorageException extends RuntimeException {
 

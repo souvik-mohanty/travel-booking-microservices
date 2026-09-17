@@ -1,6 +1,6 @@
-package com.tourflow.review.dto;
+package com.tourflow.engagement.dto;
 
-import com.tourflow.review.domain.Review;
+import com.tourflow.engagement.domain.Review;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

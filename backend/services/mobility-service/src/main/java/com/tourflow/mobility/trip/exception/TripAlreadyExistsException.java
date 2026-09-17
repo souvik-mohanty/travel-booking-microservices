@@ -1,4 +1,4 @@
-package com.tourflow.trip.exception;
+package com.tourflow.mobility.trip.exception;
 
 public class TripAlreadyExistsException extends RuntimeException {
 

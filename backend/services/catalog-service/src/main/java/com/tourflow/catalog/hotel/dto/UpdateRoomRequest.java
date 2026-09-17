@@ -1,4 +1,4 @@
-package com.tourflow.hotel.dto;
+package com.tourflow.catalog.hotel.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

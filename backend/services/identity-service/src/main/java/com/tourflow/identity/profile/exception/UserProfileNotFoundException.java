@@ -1,4 +1,4 @@
-package com.tourflow.user.exception;
+package com.tourflow.identity.profile.exception;
 
 public class UserProfileNotFoundException extends RuntimeException {
 

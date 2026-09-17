@@ -1,16 +1,16 @@
-package com.tourflow.business.service;
+package com.tourflow.catalog.business.service;
 
-import com.tourflow.business.domain.Activity;
-import com.tourflow.business.domain.ActivityStatus;
-import com.tourflow.business.domain.Business;
-import com.tourflow.business.dto.ActivityResponse;
-import com.tourflow.business.dto.CreateActivityRequest;
-import com.tourflow.business.dto.UpdateActivityRequest;
-import com.tourflow.business.exception.ActivityNotFoundException;
-import com.tourflow.business.exception.BusinessNotFoundException;
-import com.tourflow.business.exception.UnauthorizedBusinessAccessException;
-import com.tourflow.business.repository.ActivityRepository;
-import com.tourflow.business.repository.BusinessRepository;
+import com.tourflow.catalog.business.domain.Activity;
+import com.tourflow.catalog.business.domain.ActivityStatus;
+import com.tourflow.catalog.business.domain.Business;
+import com.tourflow.catalog.business.dto.ActivityResponse;
+import com.tourflow.catalog.business.dto.CreateActivityRequest;
+import com.tourflow.catalog.business.dto.UpdateActivityRequest;
+import com.tourflow.catalog.business.exception.ActivityNotFoundException;
+import com.tourflow.catalog.business.exception.BusinessNotFoundException;
+import com.tourflow.catalog.business.exception.UnauthorizedBusinessAccessException;
+import com.tourflow.catalog.business.repository.ActivityRepository;
+import com.tourflow.catalog.business.repository.BusinessRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +60,7 @@ public class ActivityService {
                 request.price(),
                 request.durationMinutes(),
                 request.maxParticipants(),
+                request.category(),
 
                 // Not customer-visible until explicitly activated later.
                 ActivityStatus.DRAFT,
@@ -127,7 +128,8 @@ public class ActivityService {
                 request.location(),
                 request.price(),
                 request.durationMinutes(),
-                request.maxParticipants()
+                request.maxParticipants(),
+                request.category()
         );
 
         return ActivityResponse.fromEntity(activityRepository.save(activity));

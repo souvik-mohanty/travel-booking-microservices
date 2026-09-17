@@ -1,4 +1,4 @@
-package com.tourflow.audit.dto;
+package com.tourflow.insights.audit.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

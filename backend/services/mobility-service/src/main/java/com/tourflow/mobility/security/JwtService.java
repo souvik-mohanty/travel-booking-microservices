@@ -1,4 +1,4 @@
-package com.tourflow.ride.security;
+package com.tourflow.mobility.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

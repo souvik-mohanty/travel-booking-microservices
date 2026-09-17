@@ -1,6 +1,6 @@
-package com.tourflow.hotel.repository;
+package com.tourflow.catalog.hotel.repository;
 
-import com.tourflow.hotel.domain.Hotel;
+import com.tourflow.catalog.hotel.domain.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

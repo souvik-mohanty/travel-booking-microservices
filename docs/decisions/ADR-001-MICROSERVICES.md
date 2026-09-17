@@ -4,6 +4,12 @@
 
 Accepted. In effect since the project's first service (identity-service)
 and consistently applied through all 21 services built as of 2026-09-02.
+**Amended by `ADR-002-SERVICE-CONSOLIDATION.md` (2026-09-06)**, which
+redrew bounded-context boundaries at a coarser grain (25 services -> 9 +
+gateway) without reversing this ADR's core principles (schema-per-service,
+independent deployability of what remains a service, REST/Kafka
+communication conventions) -- read this ADR for those principles, ADR-002
+for the current service list.
 
 ## Context
 

@@ -1,5 +1,6 @@
-package com.tourflow.business.dto;
+package com.tourflow.catalog.business.dto;
 
+import com.tourflow.catalog.business.domain.ActivityCategory;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -30,6 +31,9 @@ public record CreateActivityRequest(
 
         @NotNull
         @Min(1)
-        Integer maxParticipants
+        Integer maxParticipants,
+
+        @NotNull
+        ActivityCategory category
 ) {
 }

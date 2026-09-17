@@ -14,15 +14,15 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/tours'
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
     setError(null)
     setSubmitting(true)
     try {
-      await login({ email, password })
-      navigate(from, { replace: true })
+      const user = await login({ email, password })
+      navigate(from ?? (user?.role === 'ADMIN' ? '/admin/users' : '/tours'), { replace: true })
     } catch (err) {
       setError(isAxiosError(err) && err.response?.status === 401 ? 'Invalid email or password.' : 'Login failed. Please try again.')
     } finally {
@@ -53,7 +53,7 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900"
+          className="mt-2 w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 dark:bg-blue-500 dark:text-white"
         >
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>
@@ -68,14 +68,14 @@ export function LoginPage() {
       <button
         type="button"
         onClick={startGoogleLogin}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-300"
       >
         Continue with Google
       </button>
 
       <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="font-medium text-slate-900 underline dark:text-slate-100">
+        <Link to="/register" className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
           Register
         </Link>
       </p>

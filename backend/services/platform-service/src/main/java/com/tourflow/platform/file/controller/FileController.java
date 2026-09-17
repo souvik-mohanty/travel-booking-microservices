@@ -1,7 +1,7 @@
-package com.tourflow.file.controller;
+package com.tourflow.platform.file.controller;
 
-import com.tourflow.file.dto.FileMetadataResponse;
-import com.tourflow.file.service.FileService;
+import com.tourflow.platform.file.dto.FileMetadataResponse;
+import com.tourflow.platform.file.service.FileService;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

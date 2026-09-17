@@ -1,8 +1,9 @@
-package com.tourflow.analytics.controller;
+package com.tourflow.insights.controller;
 
-import com.tourflow.analytics.dto.BookingSummaryResponse;
-import com.tourflow.analytics.dto.DailyBookingStatsResponse;
-import com.tourflow.analytics.service.AnalyticsService;
+import com.tourflow.insights.dto.BookingSummaryResponse;
+import com.tourflow.insights.dto.DailyBookingStatsResponse;
+import com.tourflow.insights.dto.TourBookingStatsResponse;
+import com.tourflow.insights.service.AnalyticsService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +41,10 @@ public class AnalyticsController {
         LocalDate effectiveFrom = from != null ? from : effectiveTo.minusDays(DEFAULT_RANGE_DAYS);
 
         return ResponseEntity.ok(analyticsService.getDailyBookingStats(effectiveFrom, effectiveTo));
+    }
+
+    @GetMapping("/by-tour")
+    public ResponseEntity<List<TourBookingStatsResponse>> getStatsByTour() {
+        return ResponseEntity.ok(analyticsService.getStatsByTour());
     }
 }

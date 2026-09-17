@@ -1,4 +1,4 @@
-package com.tourflow.review.security;
+package com.tourflow.engagement.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +43,7 @@ public class SecurityConfig {
                         // Monitoring endpoint remains public.
                         .requestMatchers(
                                 "/actuator/health/**",
+                                "/actuator/prometheus",
                                 "/error"
                         ).permitAll()
 
@@ -66,6 +67,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/reviews/**"
                         ).authenticated()
+
+                        // All Support APIs require authentication.
+                        .requestMatchers("/api/tickets/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

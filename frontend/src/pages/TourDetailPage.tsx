@@ -5,6 +5,8 @@ import { getTour } from '../api/tours'
 import { createBooking } from '../api/bookings'
 import { AppLayout } from '../components/AppLayout'
 import { StatusBadge } from '../components/StatusBadge'
+import { TourActivities } from '../components/TourActivities'
+import { TourItinerary } from '../components/TourItinerary'
 import { useAuth } from '../context/AuthContext'
 import { formatDateRange, formatMoney } from '../lib/format'
 import type { Tour } from '../types/tour'
@@ -101,7 +103,7 @@ export function TourDetailPage() {
           {isOwner && (
             <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
               This is your tour. Manage it from{' '}
-              <Link to="/my-tours" className="underline">
+              <Link to="/my-tours" className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
                 My Tours
               </Link>
               .
@@ -137,7 +139,7 @@ export function TourDetailPage() {
               <button
                 type="submit"
                 disabled={booking}
-                className="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900"
+                className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 dark:bg-blue-500 dark:text-white"
               >
                 {booking ? 'Booking…' : 'Book now'}
               </button>
@@ -147,13 +149,21 @@ export function TourDetailPage() {
           {bookingDone && (
             <div className="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
               Booking created. It starts as <strong>PENDING</strong> until payment is processed.{' '}
-              <button onClick={() => navigate('/bookings')} className="underline">
+              <button onClick={() => navigate('/bookings')} className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
                 View my bookings
               </button>
             </div>
           )}
         </div>
       </div>
+
+      <TourItinerary tourId={tour.id} tourDestination={tour.destination} isOwner={isOwner} />
+      <TourActivities
+        tourId={tour.id}
+        tourStartDate={tour.startDate}
+        tourEndDate={tour.endDate}
+        isOwner={isOwner}
+      />
     </AppLayout>
   )
 }

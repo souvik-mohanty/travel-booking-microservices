@@ -1,4 +1,4 @@
-package com.tourflow.ride.exception;
+package com.tourflow.mobility.exception;
 
 // Thrown for invalid state transitions and for seat-availability violations
 // (not enough seats left on a ride).

@@ -1,4 +1,4 @@
-package com.tourflow.trip.dto;
+package com.tourflow.mobility.trip.dto;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

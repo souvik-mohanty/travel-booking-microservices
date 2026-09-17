@@ -1,12 +1,12 @@
-package com.tourflow.user.service;
+package com.tourflow.identity.profile.service;
 
-import com.tourflow.user.domain.UserProfile;
-import com.tourflow.user.dto.CreateUserProfileRequest;
-import com.tourflow.user.dto.UpdateUserProfileRequest;
-import com.tourflow.user.dto.UserProfileResponse;
-import com.tourflow.user.exception.UserProfileAlreadyExistsException;
-import com.tourflow.user.exception.UserProfileNotFoundException;
-import com.tourflow.user.repository.UserProfileRepository;
+import com.tourflow.identity.profile.domain.UserProfile;
+import com.tourflow.identity.profile.dto.CreateUserProfileRequest;
+import com.tourflow.identity.profile.dto.UpdateUserProfileRequest;
+import com.tourflow.identity.profile.dto.UserProfileResponse;
+import com.tourflow.identity.profile.exception.UserProfileAlreadyExistsException;
+import com.tourflow.identity.profile.exception.UserProfileNotFoundException;
+import com.tourflow.identity.profile.repository.UserProfileRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

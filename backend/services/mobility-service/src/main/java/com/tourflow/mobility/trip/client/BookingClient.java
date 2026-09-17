@@ -1,6 +1,6 @@
-package com.tourflow.trip.client;
+package com.tourflow.mobility.trip.client;
 
-import com.tourflow.trip.dto.BookingResponse;
+import com.tourflow.mobility.trip.dto.BookingResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

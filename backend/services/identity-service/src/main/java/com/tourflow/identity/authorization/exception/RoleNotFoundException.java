@@ -1,4 +1,4 @@
-package com.tourflow.authorization.exception;
+package com.tourflow.identity.authorization.exception;
 
 public class RoleNotFoundException extends RuntimeException {
 

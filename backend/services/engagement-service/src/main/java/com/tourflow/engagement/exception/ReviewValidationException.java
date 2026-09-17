@@ -1,4 +1,4 @@
-package com.tourflow.review.exception;
+package com.tourflow.engagement.exception;
 
 public class ReviewValidationException extends RuntimeException {
 

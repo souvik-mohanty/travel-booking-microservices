@@ -93,6 +93,7 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/auth/logout",
                                 "/actuator/health",
+                                "/actuator/prometheus",
                                 "/error"
                         ).permitAll()
 
@@ -102,6 +103,17 @@ public class SecurityConfig {
                                 "/oauth2/authorization/**",
                                 "/login/oauth2/code/**"
                         ).permitAll()
+
+                        // Admin-only account management.
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // RBAC (roles/permissions) and user profile APIs just
+                        // require authentication.
+                        .requestMatchers(
+                                "/api/roles/**",
+                                "/api/permissions/**",
+                                "/api/users/**"
+                        ).authenticated()
 
                         // Every other endpoint requires authentication.
                         .anyRequest().authenticated()

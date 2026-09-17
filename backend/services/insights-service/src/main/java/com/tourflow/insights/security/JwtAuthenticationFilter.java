@@ -1,4 +1,4 @@
-package com.tourflow.analytics.security;
+package com.tourflow.insights.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

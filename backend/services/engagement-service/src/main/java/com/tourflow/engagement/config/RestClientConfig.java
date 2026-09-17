@@ -1,4 +1,4 @@
-package com.tourflow.review.config;
+package com.tourflow.engagement.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;

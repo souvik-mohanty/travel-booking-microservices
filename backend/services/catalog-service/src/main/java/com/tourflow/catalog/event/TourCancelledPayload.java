@@ -1,4 +1,4 @@
-package com.tourflow.tour.event;
+package com.tourflow.catalog.event;
 
 import java.util.UUID;
 

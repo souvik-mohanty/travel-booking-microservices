@@ -1,4 +1,4 @@
-package com.tourflow.analytics.repository;
+package com.tourflow.insights.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

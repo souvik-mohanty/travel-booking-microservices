@@ -1,16 +1,45 @@
 import type { ReactNode } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import type { UserRole } from '../types/auth'
 
-const navItems = [
+const TOURIST_NAV_ITEMS = [
   { to: '/tours', label: 'Browse Tours' },
   { to: '/bookings', label: 'My Bookings' },
-  { to: '/my-tours', label: 'My Tours' },
 ]
+
+const BUSINESS_NAV_ITEMS = [
+  { to: '/tours', label: 'Browse Tours' },
+  { to: '/my-tours', label: 'My Tours' },
+  { to: '/business', label: 'My Business' },
+  { to: '/hotels', label: 'My Hotels' },
+]
+
+const ADMIN_NAV_ITEMS = [
+  { to: '/admin/users', label: 'Users' },
+  { to: '/admin/businesses', label: 'Businesses' },
+  { to: '/admin/hotels', label: 'Hotels' },
+  { to: '/admin/analytics', label: 'Analytics' },
+]
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  TOURIST: 'Tourist',
+  BUSINESS: 'Business',
+  ADMIN: 'Admin',
+}
+
+const NAV_ITEMS_BY_ROLE: Record<UserRole, typeof TOURIST_NAV_ITEMS> = {
+  TOURIST: TOURIST_NAV_ITEMS,
+  BUSINESS: BUSINESS_NAV_ITEMS,
+  ADMIN: ADMIN_NAV_ITEMS,
+}
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const navItems = NAV_ITEMS_BY_ROLE[user?.role ?? 'TOURIST']
+  const homeLink = user?.role === 'ADMIN' ? '/admin/users' : '/tours'
 
   async function handleLogout() {
     await logout()
@@ -19,10 +48,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <header className="relative border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        {/* Brand accent line -- the one place the blue->green gradient always shows, unmissable but not loud. */}
+        <div className="tf-gradient-bar absolute inset-x-0 top-0 h-0.5" />
+
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
           <div className="flex items-center gap-8">
-            <NavLink to="/tours" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            <NavLink
+              to={homeLink}
+              className="tf-gradient-text text-lg font-bold tracking-tight transition-transform duration-200 hover:scale-[1.03]"
+            >
               TourFlow
             </NavLink>
             <nav className="flex gap-5 text-sm">
@@ -31,9 +66,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    isActive
-                      ? 'font-medium text-slate-900 dark:text-slate-100'
-                      : 'text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
+                    `relative py-1 transition-colors duration-200 after:absolute after:-bottom-[1px] after:left-0 after:h-0.5 after:rounded-full after:transition-all after:duration-300 ${
+                      isActive
+                        ? 'font-medium text-blue-700 after:w-full after:bg-blue-600 dark:text-blue-400 dark:after:bg-blue-400'
+                        : 'text-slate-500 after:w-0 after:bg-green-500 hover:text-slate-900 hover:after:w-full dark:text-slate-400 dark:hover:text-slate-100'
+                    }`
                   }
                 >
                   {item.label}
@@ -43,10 +80,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
-            {user && <span className="hidden text-sm text-slate-500 dark:text-slate-400 sm:inline">{user.email}</span>}
+            {user && (
+              <span className="hidden items-center gap-2 text-sm text-slate-500 dark:text-slate-400 sm:flex">
+                {user.email}
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+                  {ROLE_LABELS[user.role]}
+                </span>
+              </span>
+            )}
             <button
               onClick={handleLogout}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-300"
             >
               Sign out
             </button>
@@ -54,7 +98,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <main key={location.pathname} className="mx-auto max-w-6xl px-6 py-8 animate-fade-in-up">
+        {children}
+      </main>
     </div>
   )
 }

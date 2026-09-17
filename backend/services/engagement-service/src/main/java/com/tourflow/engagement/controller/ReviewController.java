@@ -1,9 +1,9 @@
-package com.tourflow.review.controller;
+package com.tourflow.engagement.controller;
 
-import com.tourflow.review.dto.CreateReviewRequest;
-import com.tourflow.review.dto.ReviewResponse;
-import com.tourflow.review.dto.UpdateReviewRequest;
-import com.tourflow.review.service.ReviewService;
+import com.tourflow.engagement.dto.CreateReviewRequest;
+import com.tourflow.engagement.dto.ReviewResponse;
+import com.tourflow.engagement.dto.UpdateReviewRequest;
+import com.tourflow.engagement.service.ReviewService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

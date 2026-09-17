@@ -1,3 +1,4 @@
+import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
@@ -5,6 +6,11 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     // Matches app.oauth2.authorized-redirect-uri (http://localhost:3000/oauth2/redirect)
     // in identity-service's application.yml.

@@ -1,10 +1,10 @@
-package com.tourflow.analytics;
+package com.tourflow.insights;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AnalyticsServiceApplicationTests {
+class InsightsServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

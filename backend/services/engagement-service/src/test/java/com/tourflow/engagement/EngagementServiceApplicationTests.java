@@ -1,10 +1,10 @@
-package com.tourflow.review;
+package com.tourflow.engagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ReviewServiceApplicationTests {
+class EngagementServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

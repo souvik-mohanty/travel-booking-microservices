@@ -1,7 +1,7 @@
-package com.tourflow.review.repository;
+package com.tourflow.engagement.repository;
 
-import com.tourflow.review.domain.Review;
-import com.tourflow.review.domain.ReviewStatus;
+import com.tourflow.engagement.domain.Review;
+import com.tourflow.engagement.domain.ReviewStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

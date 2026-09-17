@@ -1,9 +1,12 @@
 # API Standards
 
-Conventions actually followed across every built service (identity, tour,
-booking, payment, business, review, user, driver, fleet, guide, trip,
-tracking, hotel, notification, support, authorization, audit, file). New
-services should match these unless there's a specific reason not to.
+Conventions actually followed across every built service: identity-service,
+catalog-service, booking-service, payment-service, mobility-service,
+engagement-service, platform-service, insights-service, search-service (see
+`architecture/SERVICE-BOUNDARIES.md` for what each absorbed in the
+2026-09-06 consolidation, `decisions/ADR-002-SERVICE-CONSOLIDATION.md` for
+why). New services should match these unless there's a specific reason not
+to.
 
 ## Base paths
 
@@ -13,10 +16,11 @@ needed until a breaking change actually happens, per the "don't add for
 hypothetical future requirements" principle. `/actuator/health` and
 `/actuator/info` are exposed per service for monitoring.
 
-## CORS (2026-09-02)
+## CORS
 
-identity-service, tour-service, search-service, and booking-service each
-declare a `CorsConfigurationSource` bean in `SecurityConfig` and call
+identity-service, catalog-service, booking-service, mobility-service,
+insights-service, and search-service each declare a
+`CorsConfigurationSource` bean in `SecurityConfig` and call
 `.cors(cors -> cors.configurationSource(...))` in the filter chain, allowing
 the origins in `app.cors.allowed-origins` (default: `localhost:3000`/`3001`/
 `5173` -- Vite's configured port, its fallback if that port's taken, and its
@@ -25,10 +29,12 @@ integration pass** -- every backend endpoint tested fine with `curl` (which
 doesn't enforce CORS), but every single request from an actual browser was
 silently blocked before it reached `JwtAuthenticationFilter`. `curl`/Postman
 testing a new endpoint proves the endpoint works; it does not prove a
-browser client can reach it. Any new service the frontend calls directly
-needs the same bean -- copy it from one of the four above rather than
-assuming Spring Security allows cross-origin requests by default (it
-doesn't).
+browser client can reach it. `engagement-service` and `platform-service`
+don't have one yet -- add it the day the frontend calls either directly,
+copying the bean from one of the six above rather than assuming Spring
+Security allows cross-origin requests by default (it doesn't). Calling
+either through `api-gateway` instead sidesteps this, since only the
+gateway's own origin matters then.
 
 ## Authentication
 
@@ -51,7 +57,7 @@ UUID userId = UUID.fromString(authentication.getName());
 ```
 
 Request DTOs deliberately omit an ownership field. The one exception in the
-whole codebase is `notification-service`'s `CreateNotificationRequest.userId`
+whole codebase is `platform-service`'s `CreateNotificationRequest.userId`
 -- that's the *recipient*, not the caller, since a notification is
 legitimately sent by one party to another.
 
@@ -79,15 +85,26 @@ legitimately sent by one party to another.
 
 ## Error response bodies
 
-Most services return a plain string body (`ResponseEntity<String>`) for
-single-exception handlers -- just the message, no envelope. Validation
-failures return `Map<String, String>` (field name -> message).
-`review-service` is the one exception: it uses a structured envelope
-(`timestamp`/`status`/`error`/`message`) because it distinguishes client
-validation errors from upstream-service-unavailable errors and wanted that
-visible in the shape of the response. Don't assume one shape platform-wide
-when reading a response -- check the specific service's
-`GlobalExceptionHandler`.
+There is no one shape platform-wide -- never assume one when reading a
+response; check the specific service's `GlobalExceptionHandler`. Two shapes
+exist, and merging services in 2026-09-06 left three services with *both*
+inside the same `GlobalExceptionHandler`, one shape per absorbed domain
+(each domain's original handler methods were carried over as-is -- see
+`ADR-002-SERVICE-CONSOLIDATION.md`):
+
+| Shape | Used by |
+|---|---|
+| Plain string body (`ResponseEntity<String>`), just the message, no envelope | mobility-service (all domains), platform-service (all domains), identity-service's RBAC + profile domains, engagement-service's support domain, insights-service's audit domain |
+| Structured envelope (`timestamp`/`status`/`error`/`message`, or `ErrorResponse` on identity-service's own auth domain) | catalog-service (all domains), identity-service's own auth domain, engagement-service's review domain, insights-service's analytics domain |
+
+Validation failures (`MethodArgumentNotValidException`) return
+`Map<String, String>` (field name -> message) directly in most services,
+but nested one level under `message` in whichever shape a mixed service's
+*first-registered* generic handler used -- only one
+`@ExceptionHandler(MethodArgumentNotValidException.class)` method can exist
+per `GlobalExceptionHandler` class, so on a mixed service the surviving one
+determines the shape for every domain in that service, not just the one it
+came from.
 
 ## 404-vs-403: hiding existence
 
@@ -135,7 +152,7 @@ service-only endpoint becomes reachable by any real user). See
 Row-level pessimistic locking (`@Lock(LockModeType.PESSIMISTIC_WRITE)` via a
 `@Query`-annotated repository method), not application-level checks, guards
 any resource with a limited count that can be decremented by concurrent
-requests (`ride-service`'s seat booking is the reference implementation --
+requests (`mobility-service`'s seat booking is the reference implementation --
 verified under real concurrent load, not just written and assumed correct).
 This is the fallback until Redis distributed locking exists; per the
 project's own architecture doc, database transactions remain the primary

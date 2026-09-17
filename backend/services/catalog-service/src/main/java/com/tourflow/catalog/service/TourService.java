@@ -1,10 +1,10 @@
-package com.tourflow.tour.service;
+package com.tourflow.catalog.service;
 
-import com.tourflow.tour.domain.Tour;
-import com.tourflow.tour.dto.CreateTourRequest;
-import com.tourflow.tour.dto.TourResponse;
-import com.tourflow.tour.event.TourEventPublisher;
-import com.tourflow.tour.repository.TourRepository;
+import com.tourflow.catalog.domain.Tour;
+import com.tourflow.catalog.dto.CreateTourRequest;
+import com.tourflow.catalog.dto.TourResponse;
+import com.tourflow.catalog.event.TourEventPublisher;
+import com.tourflow.catalog.repository.TourRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

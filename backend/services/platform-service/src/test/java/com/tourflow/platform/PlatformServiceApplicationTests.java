@@ -1,10 +1,10 @@
-package com.tourflow.notification;
+package com.tourflow.platform;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class NotificationServiceApplicationTests {
+class PlatformServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

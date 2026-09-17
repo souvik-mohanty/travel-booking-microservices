@@ -1,4 +1,4 @@
-package com.tourflow.driver.domain;
+package com.tourflow.mobility.driver.domain;
 
 // Verification state of a driver. No endpoint transitions PENDING_VERIFICATION
 // yet -- that needs an ops/admin authorization model that doesn't exist in

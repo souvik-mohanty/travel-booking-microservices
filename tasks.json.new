@@ -1,0 +1,491 @@
+{
+	"//1": "Runs every already-built backend microservice plus the frontend dev server",
+	"//2": "with a single command instead of starting them one by one in separate",
+	"//3": "terminals. Backend services live under backend/services (and",
+	"//4": "backend/gateway/api-gateway); the frontend lives under frontend/.",
+	"//5": "",
+	"//6": "Usage: Ctrl+Shift+B, or Command Palette -> \"Tasks: Run Task\" -> \"Run All Services\".",
+	"//7": "Each service/app gets its own terminal panel (grouped under \"services\").",
+	"//8": "",
+	"//9": "Each backend service is built with `mvn clean package` and started via",
+	"//10": "`java -jar`, not `mvn spring-boot:run`. spring-boot:run trusts a stale",
+	"//11": "\"up to date\" timestamp check and can silently run an old/corrupted",
+	"//12": "target/classes -- clean package + java -jar always reflects the current",
+	"//13": "source. Add a new service by copying one Build/Run pair below and adding",
+	"//14": "its Run label to \"Run All Services\".",
+	"//15": "",
+	"//16": "The frontend (Vite) has no build step in the dev loop -- \"Run: frontend\"",
+	"//17": "just runs `npm run dev` directly. Run \"Install: frontend\" once (or after",
+	"//18": "pulling dependency changes) before the first \"Run: frontend\".",
+	"//19": "",
+	"//20": "Backend was consolidated from 25 services down to 9 domain services +",
+	"//21": "api-gateway (2026-09-06) -- see docs/decisions/ADR-002-SERVICE-CONSOLIDATION.md.",
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build: api-gateway",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/gateway/api-gateway"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: api-gateway",
+			"type": "shell",
+			"command": "java -jar target/api-gateway-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/gateway/api-gateway"
+			},
+			"dependsOn": [
+				"Build: api-gateway"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "api-gateway",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting ApiGatewayApplication.*$",
+					"endsPattern": "^.*Started ApiGatewayApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: identity-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/identity-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: identity-service",
+			"type": "shell",
+			"command": "java -jar target/identity-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/identity-service"
+			},
+			"dependsOn": [
+				"Build: identity-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "identity-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting IdentityServiceApplication.*$",
+					"endsPattern": "^.*Started IdentityServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: catalog-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/catalog-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: catalog-service",
+			"type": "shell",
+			"command": "java -jar target/catalog-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/catalog-service"
+			},
+			"dependsOn": [
+				"Build: catalog-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "catalog-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting CatalogServiceApplication.*$",
+					"endsPattern": "^.*Started CatalogServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: booking-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/booking-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: booking-service",
+			"type": "shell",
+			"command": "java -jar target/booking-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/booking-service"
+			},
+			"dependsOn": [
+				"Build: booking-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "booking-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting BookingServiceApplication.*$",
+					"endsPattern": "^.*Started BookingServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: payment-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/payment-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: payment-service",
+			"type": "shell",
+			"command": "java -jar target/payment-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/payment-service"
+			},
+			"dependsOn": [
+				"Build: payment-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "payment-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting PaymentServiceApplication.*$",
+					"endsPattern": "^.*Started PaymentServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: mobility-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/mobility-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: mobility-service",
+			"type": "shell",
+			"command": "java -jar target/mobility-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/mobility-service"
+			},
+			"dependsOn": [
+				"Build: mobility-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "mobility-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting MobilityServiceApplication.*$",
+					"endsPattern": "^.*Started MobilityServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: engagement-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/engagement-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: engagement-service",
+			"type": "shell",
+			"command": "java -jar target/engagement-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/engagement-service"
+			},
+			"dependsOn": [
+				"Build: engagement-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "engagement-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting EngagementServiceApplication.*$",
+					"endsPattern": "^.*Started EngagementServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: platform-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/platform-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: platform-service",
+			"type": "shell",
+			"command": "java -jar target/platform-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/platform-service"
+			},
+			"dependsOn": [
+				"Build: platform-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "platform-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting PlatformServiceApplication.*$",
+					"endsPattern": "^.*Started PlatformServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: insights-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/insights-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: insights-service",
+			"type": "shell",
+			"command": "java -jar target/insights-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/insights-service"
+			},
+			"dependsOn": [
+				"Build: insights-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "insights-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting InsightsServiceApplication.*$",
+					"endsPattern": "^.*Started InsightsServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Build: search-service",
+			"type": "shell",
+			"command": "mvn -o clean package -DskipTests",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/search-service"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: search-service",
+			"type": "shell",
+			"command": "java -jar target/search-service-0.0.1-SNAPSHOT.jar",
+			"options": {
+				"cwd": "${workspaceFolder}/backend/services/search-service"
+			},
+			"dependsOn": [
+				"Build: search-service"
+			],
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "search-service",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting SearchServiceApplication.*$",
+					"endsPattern": "^.*Started SearchServiceApplication.*$"
+				}
+			}
+		},
+		{
+			"label": "Install: frontend",
+			"type": "shell",
+			"command": "npm install",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: frontend",
+			"type": "shell",
+			"command": "npm run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"isBackground": true,
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always",
+				"group": "services"
+			},
+			"problemMatcher": {
+				"owner": "frontend",
+				"pattern": {
+					"regexp": "^never-matches-anything$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*VITE v.*$",
+					"endsPattern": "^.*ready in.*$"
+				}
+			}
+		},
+		{
+			"label": "Run All Services",
+			"dependsOn": [
+				"Run: api-gateway",
+				"Run: identity-service",
+				"Run: catalog-service",
+				"Run: booking-service",
+				"Run: payment-service",
+				"Run: mobility-service",
+				"Run: engagement-service",
+				"Run: platform-service",
+				"Run: insights-service",
+				"Run: search-service",
+				"Run: frontend"
+			],
+			"dependsOrder": "parallel",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Stop All Services",
+			"type": "shell",
+			"command": "taskkill //IM java.exe //F",
+			"problemMatcher": []
+		}
+	]
+}

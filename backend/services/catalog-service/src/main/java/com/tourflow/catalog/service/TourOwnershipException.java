@@ -1,4 +1,4 @@
-package com.tourflow.tour.service;
+package com.tourflow.catalog.service;
 
 // Thrown when the caller tries to publish/cancel a tour they didn't create.
 // Mapped to HTTP 403 Forbidden by GlobalExceptionHandler -- the caller

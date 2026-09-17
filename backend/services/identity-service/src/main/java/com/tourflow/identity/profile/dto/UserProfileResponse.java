@@ -1,6 +1,6 @@
-package com.tourflow.user.dto;
+package com.tourflow.identity.profile.dto;
 
-import com.tourflow.user.domain.UserProfile;
+import com.tourflow.identity.profile.domain.UserProfile;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

@@ -69,6 +69,37 @@ public class BookingController {
         );
     }
 
+    // Business visibility: which customers booked one of the caller's tours
+    // (e.g. to find a booking's trip logbook). Only the tour's creator may
+    // call this -- enforced in BookingService via a tour-service lookup.
+    @GetMapping("/tours/{tourId}")
+    public ResponseEntity<List<BookingResponse>> getBookingsForTour(
+            @PathVariable UUID tourId,
+            Authentication authentication
+    ) {
+
+        UUID callerId = UUID.fromString(authentication.getName());
+        String token = (String) authentication.getCredentials();
+
+        return ResponseEntity.ok(
+                bookingService.getBookingsForTour(tourId, callerId, token)
+        );
+    }
+
+    // Admin visibility: a specific user's bookings. See SecurityConfig for
+    // the ADMIN-role gate -- reuses the same service method getUserBookings
+    // uses for "my bookings", just with an admin-supplied target userId
+    // instead of the caller's own.
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<BookingResponse>> getBookingsForUser(
+            @PathVariable UUID userId
+    ) {
+
+        return ResponseEntity.ok(
+                bookingService.getUserBookings(userId)
+        );
+    }
+
     // Mark a booking as paid. Called by Payment Service with a service-role
     // token, not by tourists directly -- see SecurityConfig.
     @PatchMapping("/{id}/mark-paid")

@@ -1,11 +1,11 @@
-package com.tourflow.hotel.controller;
+package com.tourflow.catalog.hotel.controller;
 
-import com.tourflow.hotel.dto.CreateHotelRequest;
-import com.tourflow.hotel.dto.HotelResponse;
-import com.tourflow.hotel.dto.RoomResponse;
-import com.tourflow.hotel.dto.UpdateHotelRequest;
-import com.tourflow.hotel.service.HotelService;
-import com.tourflow.hotel.service.RoomService;
+import com.tourflow.catalog.hotel.dto.CreateHotelRequest;
+import com.tourflow.catalog.hotel.dto.HotelResponse;
+import com.tourflow.catalog.hotel.dto.RoomResponse;
+import com.tourflow.catalog.hotel.dto.UpdateHotelRequest;
+import com.tourflow.catalog.hotel.service.HotelService;
+import com.tourflow.catalog.hotel.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,6 +85,27 @@ public class HotelController {
 
         return ResponseEntity.ok(
                 roomService.getRoomsForHotel(hotelId)
+        );
+    }
+
+    // Admin moderation -- see SecurityConfig for the ADMIN-role gate.
+    @PatchMapping("/{id}/suspend")
+    public ResponseEntity<HotelResponse> suspendHotel(
+            @PathVariable UUID id
+    ) {
+
+        return ResponseEntity.ok(
+                hotelService.suspendHotel(id)
+        );
+    }
+
+    @PatchMapping("/{id}/reinstate")
+    public ResponseEntity<HotelResponse> reinstateHotel(
+            @PathVariable UUID id
+    ) {
+
+        return ResponseEntity.ok(
+                hotelService.reinstateHotel(id)
         );
     }
 }

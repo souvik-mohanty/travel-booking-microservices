@@ -1,4 +1,4 @@
-package com.tourflow.tracking.exception;
+package com.tourflow.mobility.tracking.exception;
 
 public class NoLocationDataException extends RuntimeException {
 

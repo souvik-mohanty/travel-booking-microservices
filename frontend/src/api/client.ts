@@ -8,6 +8,10 @@ export const SERVICE_URLS = {
   tour: import.meta.env.VITE_TOUR_SERVICE_URL ?? 'http://localhost:8082',
   booking: import.meta.env.VITE_BOOKING_SERVICE_URL ?? 'http://localhost:8083',
   search: import.meta.env.VITE_SEARCH_SERVICE_URL ?? 'http://localhost:8099',
+  business: import.meta.env.VITE_BUSINESS_SERVICE_URL ?? 'http://localhost:8086',
+  hotel: import.meta.env.VITE_HOTEL_SERVICE_URL ?? 'http://localhost:8096',
+  trip: import.meta.env.VITE_TRIP_SERVICE_URL ?? 'http://localhost:8094',
+  analytics: import.meta.env.VITE_ANALYTICS_SERVICE_URL ?? 'http://localhost:8100',
 } as const
 
 // Only identity-service issues/refreshes tokens -- every other client's 401
@@ -82,3 +86,7 @@ export const identityClient = createServiceClient(SERVICE_URLS.identity)
 export const tourClient = createServiceClient(SERVICE_URLS.tour)
 export const bookingClient = createServiceClient(SERVICE_URLS.booking)
 export const searchClient = createServiceClient(SERVICE_URLS.search)
+export const businessClient = createServiceClient(SERVICE_URLS.business)
+export const hotelClient = createServiceClient(SERVICE_URLS.hotel)
+export const tripClient = createServiceClient(SERVICE_URLS.trip)
+export const analyticsClient = createServiceClient(SERVICE_URLS.analytics)

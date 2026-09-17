@@ -1,14 +1,14 @@
-package com.tourflow.fleet.service;
+package com.tourflow.mobility.fleet.service;
 
-import com.tourflow.fleet.domain.Vehicle;
-import com.tourflow.fleet.domain.VehicleStatus;
-import com.tourflow.fleet.dto.CreateVehicleRequest;
-import com.tourflow.fleet.dto.UpdateVehicleRequest;
-import com.tourflow.fleet.dto.VehicleResponse;
-import com.tourflow.fleet.exception.VehicleAccessDeniedException;
-import com.tourflow.fleet.exception.VehicleAlreadyExistsException;
-import com.tourflow.fleet.exception.VehicleNotFoundException;
-import com.tourflow.fleet.repository.VehicleRepository;
+import com.tourflow.mobility.fleet.domain.Vehicle;
+import com.tourflow.mobility.fleet.domain.VehicleStatus;
+import com.tourflow.mobility.fleet.dto.CreateVehicleRequest;
+import com.tourflow.mobility.fleet.dto.UpdateVehicleRequest;
+import com.tourflow.mobility.fleet.dto.VehicleResponse;
+import com.tourflow.mobility.fleet.exception.VehicleAccessDeniedException;
+import com.tourflow.mobility.fleet.exception.VehicleAlreadyExistsException;
+import com.tourflow.mobility.fleet.exception.VehicleNotFoundException;
+import com.tourflow.mobility.fleet.repository.VehicleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

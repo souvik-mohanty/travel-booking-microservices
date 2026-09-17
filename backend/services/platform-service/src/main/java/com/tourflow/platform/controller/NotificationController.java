@@ -1,8 +1,8 @@
-package com.tourflow.notification.controller;
+package com.tourflow.platform.controller;
 
-import com.tourflow.notification.dto.CreateNotificationRequest;
-import com.tourflow.notification.dto.NotificationResponse;
-import com.tourflow.notification.service.NotificationService;
+import com.tourflow.platform.dto.CreateNotificationRequest;
+import com.tourflow.platform.dto.NotificationResponse;
+import com.tourflow.platform.service.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

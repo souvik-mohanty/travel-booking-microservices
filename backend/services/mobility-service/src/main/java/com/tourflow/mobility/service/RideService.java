@@ -1,13 +1,13 @@
-package com.tourflow.ride.service;
+package com.tourflow.mobility.service;
 
-import com.tourflow.ride.domain.Ride;
-import com.tourflow.ride.domain.RideStatus;
-import com.tourflow.ride.dto.CreateRideRequest;
-import com.tourflow.ride.dto.RideResponse;
-import com.tourflow.ride.exception.InvalidRideStateException;
-import com.tourflow.ride.exception.RideAccessDeniedException;
-import com.tourflow.ride.exception.RideNotFoundException;
-import com.tourflow.ride.repository.RideRepository;
+import com.tourflow.mobility.domain.Ride;
+import com.tourflow.mobility.domain.RideStatus;
+import com.tourflow.mobility.dto.CreateRideRequest;
+import com.tourflow.mobility.dto.RideResponse;
+import com.tourflow.mobility.exception.InvalidRideStateException;
+import com.tourflow.mobility.exception.RideAccessDeniedException;
+import com.tourflow.mobility.exception.RideNotFoundException;
+import com.tourflow.mobility.repository.RideRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,6 +1,6 @@
-package com.tourflow.support.repository;
+package com.tourflow.engagement.support.repository;
 
-import com.tourflow.support.domain.SupportTicket;
+import com.tourflow.engagement.support.domain.SupportTicket;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

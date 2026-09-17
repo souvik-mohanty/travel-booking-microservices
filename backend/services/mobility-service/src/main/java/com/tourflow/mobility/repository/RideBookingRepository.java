@@ -1,6 +1,6 @@
-package com.tourflow.ride.repository;
+package com.tourflow.mobility.repository;
 
-import com.tourflow.ride.domain.RideBooking;
+import com.tourflow.mobility.domain.RideBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

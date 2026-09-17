@@ -1,11 +1,11 @@
-package com.tourflow.authorization.service;
+package com.tourflow.identity.authorization.service;
 
-import com.tourflow.authorization.domain.Role;
-import com.tourflow.authorization.dto.CreateRoleRequest;
-import com.tourflow.authorization.dto.RoleResponse;
-import com.tourflow.authorization.exception.AlreadyExistsException;
-import com.tourflow.authorization.exception.RoleNotFoundException;
-import com.tourflow.authorization.repository.RoleRepository;
+import com.tourflow.identity.authorization.domain.Role;
+import com.tourflow.identity.authorization.dto.CreateRoleRequest;
+import com.tourflow.identity.authorization.dto.RoleResponse;
+import com.tourflow.identity.authorization.exception.AlreadyExistsException;
+import com.tourflow.identity.authorization.exception.RoleNotFoundException;
+import com.tourflow.identity.authorization.repository.RoleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

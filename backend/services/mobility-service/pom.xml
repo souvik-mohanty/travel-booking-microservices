@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.tourflow</groupId>
-	<artifactId>ride-service</artifactId>
+	<artifactId>mobility-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ride-service</name>
-	<description/>
+	<name>mobility-service</name>
+	<description>Drivers, fleet, rides, trips, and live tracking (merged driver-service + fleet-service + ride-service + trip-service + tracking-service)</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -33,6 +33,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

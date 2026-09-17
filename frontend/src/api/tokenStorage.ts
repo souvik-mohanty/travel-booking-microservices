@@ -1,4 +1,4 @@
-import type { AuthResponse, AuthUser } from '../types/auth'
+import type { AuthResponse, AuthUser, UserRole } from '../types/auth'
 
 const STORAGE_KEY = 'tourflow.auth'
 
@@ -39,7 +39,9 @@ export function decodeAccessToken(accessToken: string): AuthUser | null {
       email: string
       role: string
     }
-    return { userId: payload.sub, email: payload.email, role: payload.role }
+    const role: UserRole =
+      payload.role === 'BUSINESS' || payload.role === 'ADMIN' ? payload.role : 'TOURIST'
+    return { userId: payload.sub, email: payload.email, role }
   } catch {
     return null
   }

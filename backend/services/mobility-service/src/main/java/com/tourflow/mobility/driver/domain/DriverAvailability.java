@@ -1,4 +1,4 @@
-package com.tourflow.driver.domain;
+package com.tourflow.mobility.driver.domain;
 
 // Self-toggled by the driver -- separate from DriverStatus, which tracks
 // whether they're verified to drive at all.

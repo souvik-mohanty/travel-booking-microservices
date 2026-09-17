@@ -1,4 +1,4 @@
-package com.tourflow.guide.exception;
+package com.tourflow.catalog.guide.exception;
 
 public class GuideAlreadyExistsException extends RuntimeException {
 

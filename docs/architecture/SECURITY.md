@@ -17,11 +17,13 @@ specifically to avoid that mismatch.
 Claims:
 - `sub`: the user's UUID (identity-service's `User.id`)
 - `email`
-- `role`: a plain string, currently always `"TOURIST"` -- identity-service
-  has no other role-issuing path yet. Real RBAC lives in
-  authorization-service (`Role`/`Permission`/`UserRole`), which is a
-  separate, fully-built data model, but nothing currently *consults* it when
-  authorizing a request -- see "What's not implemented" below.
+- `role`: a plain string chosen at registration (`TOURIST` or `BUSINESS`;
+  `ADMIN`/`SERVICE` are never client-choosable -- see below). Real RBAC data
+  lives in identity-service's authorization sub-domain (formerly a separate
+  authorization-service -- see `ADR-002-SERVICE-CONSOLIDATION.md`;
+  `Role`/`Permission`/`UserRole`), a fully-built data model, but nothing
+  currently *consults* it when authorizing a request -- see "What's not
+  implemented" below.
 - `iat` / `exp`
 
 ## Per-request authentication
@@ -69,26 +71,41 @@ rule. See `payment-service/BookingClient.markBookingPaid` and
   Mismatch -> `403` (if the caller already knows the resource exists) or the
   same `404` as "not found" (if they're only guessing at a parent ID). See
   `API-STANDARDS.md`.
-- **Self-service status transitions**: several services (driver
-  verification, guide verification, support ticket status) let the
-  resource's own owner drive status changes that would, in a mature system,
-  be gated behind an ops/admin/support-agent role. This is deliberate, not
-  an oversight: identity-service issues no role besides `"TOURIST"`, so
-  there's no actor to gate these behind yet. Each of these spots has an
-  inline comment pointing back to this doc.
+- **Self-service status transitions**: several domains (driver
+  verification and guide verification in mobility-service/catalog-service,
+  support ticket status in engagement-service) let the resource's own owner
+  drive status changes that would, in a mature system, be gated behind an
+  ops/admin/support-agent role. This is deliberate, not an oversight: see
+  the `ADMIN` gap immediately below. Each of these spots has an inline
+  comment pointing back to this doc.
+- **`hasRole("ADMIN")` is checked in several places but `ADMIN` is never
+  actually issuable.** `RegisterRequest.role` only accepts `TOURIST` or
+  `BUSINESS` by validation (`@Pattern(regexp = "TOURIST|BUSINESS")`,
+  explicitly to stop a client self-electing `ADMIN` or `SERVICE`), and no
+  other code path in the project issues an `ADMIN`-roled JWT either. That
+  means every `hasRole("ADMIN")` gate added so far --
+  `/api/admin/users/**`, business/hotel suspend-reinstate,
+  `/api/analytics/**` -- is currently unreachable by any real user, the
+  same "real gap, not a bug" shape as driver/guide verification being stuck
+  at `PENDING_VERIFICATION` forever. There's no admin-provisioning path
+  (a seeded account, a promote-to-admin endpoint, anything) anywhere in the
+  codebase yet.
 
 ## What's not implemented yet
 
-- **Authorization-service isn't consulted by anything.** It has real
-  `Role`/`Permission`/`UserRole` tables and a working effective-permissions
-  endpoint (`GET /api/users/{userId}/permissions`), verified end-to-end, but
-  no other service calls it to make an authorization decision. Wiring that
-  in is the natural next step once there's an actual admin-gated action to
-  protect.
+- **The RBAC data model isn't consulted by anything.** identity-service's
+  authorization sub-domain has real `Role`/`Permission`/`UserRole` tables
+  and a working effective-permissions endpoint
+  (`GET /api/users/{userId}/permissions`), verified end-to-end, but no
+  service calls it to make an authorization decision -- every role check
+  today reads the `role` claim straight off the JWT instead. Wiring that in
+  is the natural next step once there's an actual admin-gated action to
+  protect beyond the `hasRole("ADMIN")`/`hasRole("BUSINESS")` checks already
+  in place.
 - **No OAuth2 client-credentials / mTLS for service-to-service auth** --
   the mint-your-own-JWT approach above is a deliberate lightweight
   substitute, not a production-grade service mesh.
-- **No rate limiting, no audit-log auto-instrumentation** (audit-service
-  exists and works, but nothing calls it automatically on sensitive
-  operations yet -- every audit entry has to be explicitly created by a
-  caller today).
+- **No rate limiting, no audit-log auto-instrumentation** (insights-
+  service's audit sub-domain exists and works, but nothing calls it
+  automatically on sensitive operations yet -- every audit entry has to be
+  explicitly created by a caller today).

@@ -1,7 +1,7 @@
-package com.tourflow.business.repository;
+package com.tourflow.catalog.business.repository;
 
-import com.tourflow.business.domain.Activity;
-import com.tourflow.business.domain.ActivityStatus;
+import com.tourflow.catalog.business.domain.Activity;
+import com.tourflow.catalog.business.domain.ActivityStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

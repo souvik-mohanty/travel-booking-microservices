@@ -1,6 +1,6 @@
-package com.tourflow.tracking.repository;
+package com.tourflow.mobility.tracking.repository;
 
-import com.tourflow.tracking.domain.TripLocation;
+import com.tourflow.mobility.tracking.domain.TripLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.tourflow.analytics.domain;
+package com.tourflow.insights.domain;
 
 import jakarta.persistence.*;
 

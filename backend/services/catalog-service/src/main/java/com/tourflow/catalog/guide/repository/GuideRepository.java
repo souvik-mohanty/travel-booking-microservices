@@ -1,6 +1,6 @@
-package com.tourflow.guide.repository;
+package com.tourflow.catalog.guide.repository;
 
-import com.tourflow.guide.domain.Guide;
+import com.tourflow.catalog.guide.domain.Guide;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

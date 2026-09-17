@@ -1,16 +1,16 @@
-package com.tourflow.authorization.service;
+package com.tourflow.identity.authorization.service;
 
-import com.tourflow.authorization.domain.RolePermission;
-import com.tourflow.authorization.domain.UserRole;
-import com.tourflow.authorization.dto.PermissionResponse;
-import com.tourflow.authorization.dto.RoleResponse;
-import com.tourflow.authorization.exception.AlreadyExistsException;
-import com.tourflow.authorization.exception.PermissionNotFoundException;
-import com.tourflow.authorization.exception.RoleNotFoundException;
-import com.tourflow.authorization.repository.PermissionRepository;
-import com.tourflow.authorization.repository.RolePermissionRepository;
-import com.tourflow.authorization.repository.RoleRepository;
-import com.tourflow.authorization.repository.UserRoleRepository;
+import com.tourflow.identity.authorization.domain.RolePermission;
+import com.tourflow.identity.authorization.domain.UserRole;
+import com.tourflow.identity.authorization.dto.PermissionResponse;
+import com.tourflow.identity.authorization.dto.RoleResponse;
+import com.tourflow.identity.authorization.exception.AlreadyExistsException;
+import com.tourflow.identity.authorization.exception.PermissionNotFoundException;
+import com.tourflow.identity.authorization.exception.RoleNotFoundException;
+import com.tourflow.identity.authorization.repository.PermissionRepository;
+import com.tourflow.identity.authorization.repository.RolePermissionRepository;
+import com.tourflow.identity.authorization.repository.RoleRepository;
+import com.tourflow.identity.authorization.repository.UserRoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

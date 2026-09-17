@@ -1,4 +1,4 @@
-package com.tourflow.hotel.exception;
+package com.tourflow.catalog.hotel.exception;
 
 public class UnauthorizedHotelAccessException extends RuntimeException {
 

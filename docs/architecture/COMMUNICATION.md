@@ -14,36 +14,46 @@ evolves independently" pattern used for the JWT security trio too.
 The caller's JWT is forwarded on every such call
 (`.header("Authorization", "Bearer " + token)`), taken from
 `authentication.getCredentials()` in the controller and threaded through the
-service layer. Examples: `booking-service -> tour-service` (fetch the real
-tour price), `payment-service -> booking-service` (verify a booking before
-charging it), `review-service -> booking-service` + `review-service ->
-business-service` (verify a booking is complete, verify an activity belongs
-to a business), `trip-service -> booking-service` (verify a booking exists
-before scheduling a trip).
+service layer. Examples (service names as of the 2026-09-06 consolidation --
+see `ADR-002-SERVICE-CONSOLIDATION.md`): `booking-service -> catalog-service`
+(fetch the real tour price), `payment-service -> booking-service` (verify a
+booking before charging it), `engagement-service -> booking-service` +
+`engagement-service -> catalog-service` (verify a booking is complete,
+verify an activity belongs to a business), `mobility-service ->
+booking-service` (verify a booking exists before scheduling a trip).
+
+Two calls that used to be on this list -- tour-service verifying an activity
+with business-service, and tour-service reserving a room with hotel-service
+-- are no longer REST calls at all: both callers and callees now live inside
+the same catalog-service, so they're direct in-process method calls. See
+`ARCHITECTURE.md`.
 
 When there's no user context (a webhook, a background job), the caller
 mints its own short-lived `role: SERVICE` JWT instead -- see `SECURITY.md`.
 
-## Kafka: two producers, three consumers (2026-09-02)
+## Kafka: two producers, three consumers
 
 Kafka is live and in real use, not just running unused in `docker-compose`.
 Two producers exist: `booking-service` publishes `BookingConfirmed` to
-`booking.events` when `markBookingPaid` succeeds, and `tour-service`
-publishes `TourPublished`/`TourCancelled` to `tour.events` from its
-`publish`/`cancel` endpoints. Three consumers exist: `notification-service`
-(`BookingConfirmed` -> in-app notification), `analytics-service`
-(`BookingConfirmed` -> append-only, `eventId`-deduped booking analytics
-log), and `search-service` (`TourPublished`/`TourCancelled` -> Elasticsearch
-index). See `events/EVENT-CATALOG.md` and `events/EVENT-SCHEMAS.md` for the
-envelope and what else is still just planned.
+`booking.events` when `markBookingPaid` succeeds, and `catalog-service`
+(formerly tour-service) publishes `TourPublished`/`TourCancelled` to
+`tour.events` from its `publish`/`cancel` endpoints. Three consumers exist:
+`platform-service` (formerly notification-service; `BookingConfirmed` ->
+in-app notification), `insights-service` (formerly analytics-service;
+`BookingConfirmed` -> append-only, `eventId`-deduped booking analytics log),
+and `search-service` (`TourPublished`/`TourCancelled` -> Elasticsearch
+index). Producer/consumer code just relocated with whichever service
+absorbed it in the 2026-09-06 consolidation -- topic names and contracts
+are unchanged. See `events/EVENT-CATALOG.md` and `events/EVENT-SCHEMAS.md`
+for the envelope and what else is still just planned.
 
 The synchronous `mark-paid` REST call from payment-service stays as the
 source of truth for booking state (see `ADR-001-MICROSERVICES.md`) -- the
 Kafka publish is a supplementary, best-effort side channel. Same for
-tour-service's publish/cancel: the Postgres write is the source of truth, the
-Kafka publish is a best-effort side channel to search-service. Every
-publisher in this codebase catches and logs a publish failure rather than
-throwing, so a Kafka outage can't break the request that triggered it.
+catalog-service's publish/cancel: the Postgres write is the source of
+truth, the Kafka publish is a best-effort side channel to search-service.
+Every publisher in this codebase catches and logs a publish failure rather
+than throwing, so a Kafka outage can't break the request that triggered it.
 
 **Host-vs-container gotcha (the reason this didn't work on the first try):**
 every service in this project runs as a host JVM process, not inside Docker,
@@ -76,8 +86,9 @@ package this project's Spring Boot 4.1/Jackson 3 stack actually uses (see
 `SECURITY.md`'s Jackson 3 gotcha). Producer and consumer both use plain
 `StringSerializer`/`StringDeserializer` and hand-serialize the event envelope
 with the project's own `tools.jackson.databind.ObjectMapper`, matching how
-`review-service`'s `BookingClient`/`BusinessClient` already parse responses
-as `JsonNode` trees rather than typed DTOs.
+`engagement-service`'s (formerly review-service) `BookingClient`/
+`BusinessClient` already parse responses as `JsonNode` trees rather than
+typed DTOs.
 
 ## Elasticsearch client/server version gotcha
 
@@ -100,7 +111,8 @@ bumping to match -- don't assume the existing container versions still work.
 - **gRPC** for selected latency-sensitive internal calls, where justified --
   none of the current REST calls have been identified as needing it.
 - **WebSocket** for live trip tracking push to the tourist's app.
-  tracking-service exists today as a REST-polling substitute (clients poll
+  mobility-service's tracking sub-domain (formerly tracking-service) exists
+  today as a REST-polling substitute (clients poll
   `GET /api/tracking/{tripId}/locations/latest`) -- the data model is real,
   the real-time delivery mechanism is what's deferred. The now-working
   `TripLocationUpdated`-via-Kafka path described in `EVENT-CATALOG.md` is
@@ -111,7 +123,7 @@ bumping to match -- don't assume the existing container versions still work.
 > REST/gRPC -> "I need an answer now."
 > Kafka -> "Something happened."
 
-`booking-service -> booking.events` and `tour-service -> tour.events` are
+`booking-service -> booking.events` and `catalog-service -> tour.events` are
 the real examples of the second case. Every other cross-service interaction
 in the codebase is still the first case (see above) -- new ones should be
 designed with this split in mind, but don't default to Kafka just because it

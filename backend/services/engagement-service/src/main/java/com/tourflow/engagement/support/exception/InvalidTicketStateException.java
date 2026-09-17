@@ -1,4 +1,4 @@
-package com.tourflow.support.exception;
+package com.tourflow.engagement.support.exception;
 
 public class InvalidTicketStateException extends RuntimeException {
 

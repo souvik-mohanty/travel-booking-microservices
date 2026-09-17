@@ -1,13 +1,13 @@
-package com.tourflow.tour;
+package com.tourflow.catalog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TourServiceApplication {
+public class CatalogServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TourServiceApplication.class, args);
+		SpringApplication.run(CatalogServiceApplication.class, args);
 	}
 
 }

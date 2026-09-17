@@ -1,6 +1,6 @@
-package com.tourflow.guide.dto;
+package com.tourflow.catalog.guide.dto;
 
-import com.tourflow.guide.domain.Guide;
+import com.tourflow.catalog.guide.domain.Guide;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

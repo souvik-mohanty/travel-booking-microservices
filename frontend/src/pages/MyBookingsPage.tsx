@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { cancelBooking, getMyBookings } from '../api/bookings'
 import { AppLayout } from '../components/AppLayout'
 import { StatusBadge } from '../components/StatusBadge'
+import { TripPanel } from '../components/TripPanel'
 import { formatDate, formatMoney } from '../lib/format'
 import type { Booking } from '../types/booking'
 
@@ -51,7 +52,7 @@ export function MyBookingsPage() {
       {!loading && bookings.length === 0 && !error && (
         <p className="text-sm text-slate-500 dark:text-slate-400">
           No bookings yet.{' '}
-          <Link to="/tours" className="underline">
+          <Link to="/tours" className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
             Browse tours
           </Link>{' '}
           to make one.
@@ -62,32 +63,38 @@ export function MyBookingsPage() {
         {bookings.map((booking) => (
           <div
             key={booking.id}
-            className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
           >
-            <div>
-              <div className="flex items-center gap-2">
-                <Link
-                  to={`/tours/${booking.tourId}`}
-                  className="font-medium text-slate-900 hover:underline dark:text-slate-100"
-                >
-                  Tour booking
-                </Link>
-                <StatusBadge status={booking.status} />
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/tours/${booking.tourId}`}
+                    className="font-medium text-slate-900 hover:underline dark:text-slate-100"
+                  >
+                    Tour booking
+                  </Link>
+                  <StatusBadge status={booking.status} />
+                </div>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {booking.numberOfParticipants} participant(s) · {formatMoney(booking.totalPrice)} · booked{' '}
+                  {formatDate(booking.createdAt)}
+                </p>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {booking.numberOfParticipants} participant(s) · {formatMoney(booking.totalPrice)} · booked{' '}
-                {formatDate(booking.createdAt)}
-              </p>
+
+              {(booking.status === 'PENDING' || booking.status === 'PAID') && (
+                <button
+                  onClick={() => handleCancel(booking.id)}
+                  disabled={actioningId === booking.id}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-300"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
 
-            {(booking.status === 'PENDING' || booking.status === 'PAID') && (
-              <button
-                onClick={() => handleCancel(booking.id)}
-                disabled={actioningId === booking.id}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                Cancel
-              </button>
+            {(booking.status === 'PAID' || booking.status === 'COMPLETED') && (
+              <TripPanel bookingId={booking.id} role="tourist" />
             )}
           </div>
         ))}

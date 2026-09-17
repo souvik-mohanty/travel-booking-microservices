@@ -1,9 +1,9 @@
-package com.tourflow.guide.controller;
+package com.tourflow.catalog.guide.controller;
 
-import com.tourflow.guide.domain.GuideAvailability;
-import com.tourflow.guide.dto.CreateGuideRequest;
-import com.tourflow.guide.dto.GuideResponse;
-import com.tourflow.guide.service.GuideService;
+import com.tourflow.catalog.guide.domain.GuideAvailability;
+import com.tourflow.catalog.guide.dto.CreateGuideRequest;
+import com.tourflow.catalog.guide.dto.GuideResponse;
+import com.tourflow.catalog.guide.service.GuideService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

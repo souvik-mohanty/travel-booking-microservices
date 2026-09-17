@@ -1,4 +1,4 @@
-package com.tourflow.notification.security;
+package com.tourflow.platform.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

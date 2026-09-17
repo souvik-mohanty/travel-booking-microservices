@@ -1,14 +1,16 @@
 spring:
   application:
-    name: tour-service
+    name: catalog-service
 
   datasource:
-    # currentSchema sets this connection's Postgres search_path, so every
-    # unqualified table name (Flyway's own history table included) resolves
-    # inside tour_service instead of public -- keeps this service's schema
-    # and migration history independent of identity-service's, even though
-    # both currently share the one tour_planner database/Postgres instance.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=tour_service
+    # Catalog Service (tour + business + hotel + guide, merged 2026-09-06)
+    # owns its own PostgreSQL schema. currentSchema sets this connection's
+    # Postgres search_path, so every unqualified table name (Flyway's own
+    # history table included) resolves inside catalog_service instead of
+    # public -- keeps this service's schema and migration history independent
+    # of identity-service's, even though both currently share the one
+    # tour_planner database/Postgres instance.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=catalog_service
     username: ${DB_USERNAME:tour_user}
     password: ${DB_PASSWORD:tour_password}
     driver-class-name: org.postgresql.Driver
@@ -16,9 +18,9 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    schemas: tour_service
-    # Creates the tour_service schema on first run if it doesn't exist yet --
-    # nothing else (docker-compose, an init script) provisions it.
+    schemas: catalog_service
+    # Creates the catalog_service schema on first run if it doesn't exist yet
+    # -- nothing else (docker-compose, an init script) provisions it.
     create-schemas: true
 
   jpa:

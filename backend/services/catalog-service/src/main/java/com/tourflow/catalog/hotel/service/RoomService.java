@@ -1,16 +1,16 @@
-package com.tourflow.hotel.service;
+package com.tourflow.catalog.hotel.service;
 
-import com.tourflow.hotel.domain.Hotel;
-import com.tourflow.hotel.domain.Room;
-import com.tourflow.hotel.domain.RoomStatus;
-import com.tourflow.hotel.dto.CreateRoomRequest;
-import com.tourflow.hotel.dto.RoomResponse;
-import com.tourflow.hotel.dto.UpdateRoomRequest;
-import com.tourflow.hotel.exception.HotelNotFoundException;
-import com.tourflow.hotel.exception.RoomNotFoundException;
-import com.tourflow.hotel.exception.UnauthorizedHotelAccessException;
-import com.tourflow.hotel.repository.HotelRepository;
-import com.tourflow.hotel.repository.RoomRepository;
+import com.tourflow.catalog.hotel.domain.Hotel;
+import com.tourflow.catalog.hotel.domain.Room;
+import com.tourflow.catalog.hotel.domain.RoomStatus;
+import com.tourflow.catalog.hotel.dto.CreateRoomRequest;
+import com.tourflow.catalog.hotel.dto.RoomResponse;
+import com.tourflow.catalog.hotel.dto.UpdateRoomRequest;
+import com.tourflow.catalog.hotel.exception.HotelNotFoundException;
+import com.tourflow.catalog.hotel.exception.RoomNotFoundException;
+import com.tourflow.catalog.hotel.exception.UnauthorizedHotelAccessException;
+import com.tourflow.catalog.hotel.repository.HotelRepository;
+import com.tourflow.catalog.hotel.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

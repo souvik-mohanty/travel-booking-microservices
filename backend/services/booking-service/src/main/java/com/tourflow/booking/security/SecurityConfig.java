@@ -66,7 +66,7 @@ public class SecurityConfig {
                 // Configure endpoint authorization.
                 .authorizeHttpRequests(auth -> auth
                         // Allow health checks without authentication.
-                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/health/**", "/actuator/prometheus").permitAll()
 
                         // Spring re-dispatches unhandled exceptions internally to
                         // /error to render the response. Without this, that internal
@@ -80,6 +80,11 @@ public class SecurityConfig {
                         // below, since Spring Security uses the first match.
                         .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/mark-paid")
                         .hasRole("SERVICE")
+
+                        // Admin visibility into any user's bookings -- same
+                        // first-match-wins ordering requirement as above.
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/users/*")
+                        .hasRole("ADMIN")
 
                         // All other booking APIs require authentication.
                         .requestMatchers("/api/bookings/**").authenticated()

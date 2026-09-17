@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { cancelTour, getAllTours, publishTour } from '../api/tours'
 import { AppLayout } from '../components/AppLayout'
 import { StatusBadge } from '../components/StatusBadge'
+import { TourBookings } from '../components/TourBookings'
 import { useAuth } from '../context/AuthContext'
 import { formatDateRange, formatMoney } from '../lib/format'
 import type { Tour } from '../types/tour'
@@ -13,6 +14,7 @@ export function MyToursPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actioningId, setActioningId] = useState<string | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   async function load() {
     setLoading(true)
@@ -64,7 +66,7 @@ export function MyToursPage() {
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">My Tours</h1>
         <Link
           to="/tours/new"
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 dark:bg-blue-500 dark:text-white"
         >
           Create a tour
         </Link>
@@ -76,7 +78,7 @@ export function MyToursPage() {
       {!loading && tours.length === 0 && !error && (
         <p className="text-sm text-slate-500 dark:text-slate-400">
           You haven&apos;t created any tours yet.{' '}
-          <Link to="/tours/new" className="underline">
+          <Link to="/tours/new" className="font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400">
             Create one
           </Link>
           .
@@ -87,40 +89,50 @@ export function MyToursPage() {
         {tours.map((tour) => (
           <div
             key={tour.id}
-            className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
           >
-            <div>
-              <div className="flex items-center gap-2">
-                <Link to={`/tours/${tour.id}`} className="font-medium text-slate-900 hover:underline dark:text-slate-100">
-                  {tour.title}
-                </Link>
-                <StatusBadge status={tour.status} />
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Link to={`/tours/${tour.id}`} className="font-medium text-slate-900 hover:underline dark:text-slate-100">
+                    {tour.title}
+                  </Link>
+                  <StatusBadge status={tour.status} />
+                </div>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {tour.destination} · {formatDateRange(tour.startDate, tour.endDate)} · {formatMoney(tour.price)}
+                </p>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {tour.destination} · {formatDateRange(tour.startDate, tour.endDate)} · {formatMoney(tour.price)}
-              </p>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setExpandedId(expandedId === tour.id ? null : tour.id)}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-300"
+                >
+                  {expandedId === tour.id ? 'Hide bookings' : 'View bookings'}
+                </button>
+                {tour.status === 'DRAFT' && (
+                  <button
+                    onClick={() => handlePublish(tour.id)}
+                    disabled={actioningId === tour.id}
+                    className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 dark:bg-blue-500 dark:text-white"
+                  >
+                    Publish
+                  </button>
+                )}
+                {tour.status !== 'CANCELLED' && (
+                  <button
+                    onClick={() => handleCancel(tour.id)}
+                    disabled={actioningId === tour.id}
+                    className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-300"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              {tour.status === 'DRAFT' && (
-                <button
-                  onClick={() => handlePublish(tour.id)}
-                  disabled={actioningId === tour.id}
-                  className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900"
-                >
-                  Publish
-                </button>
-              )}
-              {tour.status !== 'CANCELLED' && (
-                <button
-                  onClick={() => handleCancel(tour.id)}
-                  disabled={actioningId === tour.id}
-                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
+            {expandedId === tour.id && <TourBookings tourId={tour.id} />}
           </div>
         ))}
       </div>

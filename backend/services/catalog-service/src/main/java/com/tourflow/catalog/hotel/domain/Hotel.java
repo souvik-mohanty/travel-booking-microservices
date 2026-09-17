@@ -1,4 +1,4 @@
-package com.tourflow.hotel.domain;
+package com.tourflow.catalog.hotel.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

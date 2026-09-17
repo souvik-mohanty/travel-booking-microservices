@@ -1,9 +1,9 @@
-package com.tourflow.driver.controller;
+package com.tourflow.mobility.driver.controller;
 
-import com.tourflow.driver.domain.DriverAvailability;
-import com.tourflow.driver.dto.CreateDriverRequest;
-import com.tourflow.driver.dto.DriverResponse;
-import com.tourflow.driver.service.DriverService;
+import com.tourflow.mobility.driver.domain.DriverAvailability;
+import com.tourflow.mobility.driver.dto.CreateDriverRequest;
+import com.tourflow.mobility.driver.dto.DriverResponse;
+import com.tourflow.mobility.driver.service.DriverService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

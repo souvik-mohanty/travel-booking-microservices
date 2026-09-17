@@ -1,4 +1,4 @@
-package com.tourflow.business.exception;
+package com.tourflow.catalog.business.exception;
 
 // Thrown when a requested activity does not exist.
 public class ActivityNotFoundException extends RuntimeException {

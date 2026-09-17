@@ -1,4 +1,4 @@
-package com.tourflow.audit.exception;
+package com.tourflow.insights.audit.exception;
 
 public class AuditLogNotFoundException extends RuntimeException {
 

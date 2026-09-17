@@ -1,6 +1,6 @@
-package com.tourflow.business.dto;
+package com.tourflow.catalog.business.dto;
 
-import com.tourflow.business.domain.Business;
+import com.tourflow.catalog.business.domain.Business;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

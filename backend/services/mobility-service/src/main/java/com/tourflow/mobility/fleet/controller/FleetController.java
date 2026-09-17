@@ -1,10 +1,10 @@
-package com.tourflow.fleet.controller;
+package com.tourflow.mobility.fleet.controller;
 
-import com.tourflow.fleet.domain.VehicleStatus;
-import com.tourflow.fleet.dto.CreateVehicleRequest;
-import com.tourflow.fleet.dto.UpdateVehicleRequest;
-import com.tourflow.fleet.dto.VehicleResponse;
-import com.tourflow.fleet.service.FleetService;
+import com.tourflow.mobility.fleet.domain.VehicleStatus;
+import com.tourflow.mobility.fleet.dto.CreateVehicleRequest;
+import com.tourflow.mobility.fleet.dto.UpdateVehicleRequest;
+import com.tourflow.mobility.fleet.dto.VehicleResponse;
+import com.tourflow.mobility.fleet.service.FleetService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

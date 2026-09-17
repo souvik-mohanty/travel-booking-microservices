@@ -1,4 +1,4 @@
-package com.tourflow.fleet.domain;
+package com.tourflow.mobility.fleet.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.tourflow.fleet.exception;
+package com.tourflow.mobility.fleet.exception;
 
 public class VehicleAccessDeniedException extends RuntimeException {
 

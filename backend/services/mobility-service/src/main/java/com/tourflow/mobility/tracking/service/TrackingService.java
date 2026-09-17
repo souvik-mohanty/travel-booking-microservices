@@ -1,10 +1,10 @@
-package com.tourflow.tracking.service;
+package com.tourflow.mobility.tracking.service;
 
-import com.tourflow.tracking.domain.TripLocation;
-import com.tourflow.tracking.dto.RecordLocationRequest;
-import com.tourflow.tracking.dto.TripLocationResponse;
-import com.tourflow.tracking.exception.NoLocationDataException;
-import com.tourflow.tracking.repository.TripLocationRepository;
+import com.tourflow.mobility.tracking.domain.TripLocation;
+import com.tourflow.mobility.tracking.dto.RecordLocationRequest;
+import com.tourflow.mobility.tracking.dto.TripLocationResponse;
+import com.tourflow.mobility.tracking.exception.NoLocationDataException;
+import com.tourflow.mobility.tracking.repository.TripLocationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

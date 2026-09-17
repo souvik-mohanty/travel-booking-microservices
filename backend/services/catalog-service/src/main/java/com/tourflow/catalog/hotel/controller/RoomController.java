@@ -1,9 +1,9 @@
-package com.tourflow.hotel.controller;
+package com.tourflow.catalog.hotel.controller;
 
-import com.tourflow.hotel.dto.CreateRoomRequest;
-import com.tourflow.hotel.dto.RoomResponse;
-import com.tourflow.hotel.dto.UpdateRoomRequest;
-import com.tourflow.hotel.service.RoomService;
+import com.tourflow.catalog.hotel.dto.CreateRoomRequest;
+import com.tourflow.catalog.hotel.dto.RoomResponse;
+import com.tourflow.catalog.hotel.dto.UpdateRoomRequest;
+import com.tourflow.catalog.hotel.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

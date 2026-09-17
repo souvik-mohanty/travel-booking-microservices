@@ -1,6 +1,6 @@
-package com.tourflow.authorization.dto;
+package com.tourflow.identity.authorization.dto;
 
-import com.tourflow.authorization.domain.Permission;
+import com.tourflow.identity.authorization.domain.Permission;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

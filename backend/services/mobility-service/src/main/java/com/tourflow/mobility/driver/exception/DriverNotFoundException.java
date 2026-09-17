@@ -1,4 +1,4 @@
-package com.tourflow.driver.exception;
+package com.tourflow.mobility.driver.exception;
 
 public class DriverNotFoundException extends RuntimeException {
 

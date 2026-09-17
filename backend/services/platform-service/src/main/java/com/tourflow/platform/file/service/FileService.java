@@ -1,10 +1,10 @@
-package com.tourflow.file.service;
+package com.tourflow.platform.file.service;
 
-import com.tourflow.file.domain.FileMetadata;
-import com.tourflow.file.dto.FileMetadataResponse;
-import com.tourflow.file.exception.FileAccessDeniedException;
-import com.tourflow.file.exception.FileNotFoundException;
-import com.tourflow.file.repository.FileMetadataRepository;
+import com.tourflow.platform.file.domain.FileMetadata;
+import com.tourflow.platform.file.dto.FileMetadataResponse;
+import com.tourflow.platform.file.exception.FileAccessDeniedException;
+import com.tourflow.platform.file.exception.FileNotFoundException;
+import com.tourflow.platform.file.repository.FileMetadataRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

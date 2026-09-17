@@ -1,6 +1,6 @@
-package com.tourflow.notification.dto;
+package com.tourflow.platform.dto;
 
-import com.tourflow.notification.domain.Notification;
+import com.tourflow.platform.domain.Notification;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

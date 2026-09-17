@@ -92,6 +92,30 @@ public class BookingService {
                 .toList();
     }
 
+    // Return all bookings for a tour -- only the tour's creator may see this
+    // (a business discovering which customers booked their tour, e.g. to
+    // find each booking's trip logbook). Same ownership check pattern as
+    // completeBooking.
+    public List<BookingResponse> getBookingsForTour(
+            UUID tourId,
+            UUID callerId,
+            String token
+    ) {
+
+        TourResponse tour = tourClient.getTour(tourId, token);
+
+        if (!tour.createdBy().equals(callerId)) {
+            throw new BookingAccessDeniedException(
+                    "Only the tour's creator can view its bookings"
+            );
+        }
+
+        return bookingRepository.findByTourId(tourId)
+                .stream()
+                .map(BookingResponse::fromEntity)
+                .toList();
+    }
+
     // Mark a booking as paid. Called by Payment Service (via a service-role
     // token, see SecurityConfig) after a payment is captured -- never by a
     // tourist directly.

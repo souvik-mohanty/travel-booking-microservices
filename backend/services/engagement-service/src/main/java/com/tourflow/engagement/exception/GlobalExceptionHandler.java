@@ -1,5 +1,8 @@
-package com.tourflow.review.exception;
+package com.tourflow.engagement.exception;
 
+import com.tourflow.engagement.support.exception.InvalidTicketStateException;
+import com.tourflow.engagement.support.exception.TicketAccessDeniedException;
+import com.tourflow.engagement.support.exception.TicketNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +15,33 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(TicketNotFoundException.class)
+    public ResponseEntity<String> handleTicketNotFound(
+            TicketNotFoundException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(TicketAccessDeniedException.class)
+    public ResponseEntity<String> handleTicketAccessDenied(
+            TicketAccessDeniedException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTicketStateException.class)
+    public ResponseEntity<String> handleInvalidTicketState(
+            InvalidTicketStateException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
+    }
 
     @ExceptionHandler(ReviewValidationException.class)
     public ResponseEntity<?> handleValidation(

@@ -1,6 +1,6 @@
-package com.tourflow.trip.dto;
+package com.tourflow.mobility.trip.dto;
 
-import com.tourflow.trip.domain.Trip;
+import com.tourflow.mobility.trip.domain.Trip;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

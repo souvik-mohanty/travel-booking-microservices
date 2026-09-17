@@ -1,6 +1,6 @@
-package com.tourflow.ride.dto;
+package com.tourflow.mobility.dto;
 
-import com.tourflow.ride.domain.Ride;
+import com.tourflow.mobility.domain.Ride;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

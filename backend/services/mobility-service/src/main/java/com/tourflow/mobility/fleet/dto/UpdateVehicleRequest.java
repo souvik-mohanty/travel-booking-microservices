@@ -1,6 +1,6 @@
-package com.tourflow.fleet.dto;
+package com.tourflow.mobility.fleet.dto;
 
-import com.tourflow.fleet.domain.VehicleType;
+import com.tourflow.mobility.fleet.domain.VehicleType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 

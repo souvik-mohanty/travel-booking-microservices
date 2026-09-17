@@ -1,17 +1,17 @@
-package com.tourflow.trip.service;
+package com.tourflow.mobility.trip.service;
 
-import com.tourflow.trip.client.BookingClient;
-import com.tourflow.trip.domain.Trip;
-import com.tourflow.trip.domain.TripStatus;
-import com.tourflow.trip.dto.AssignTripRequest;
-import com.tourflow.trip.dto.BookingResponse;
-import com.tourflow.trip.dto.CreateTripRequest;
-import com.tourflow.trip.dto.TripResponse;
-import com.tourflow.trip.exception.InvalidTripStateException;
-import com.tourflow.trip.exception.TripAccessDeniedException;
-import com.tourflow.trip.exception.TripAlreadyExistsException;
-import com.tourflow.trip.exception.TripNotFoundException;
-import com.tourflow.trip.repository.TripRepository;
+import com.tourflow.mobility.trip.client.BookingClient;
+import com.tourflow.mobility.trip.domain.Trip;
+import com.tourflow.mobility.trip.domain.TripStatus;
+import com.tourflow.mobility.trip.dto.AssignTripRequest;
+import com.tourflow.mobility.trip.dto.BookingResponse;
+import com.tourflow.mobility.trip.dto.CreateTripRequest;
+import com.tourflow.mobility.trip.dto.TripResponse;
+import com.tourflow.mobility.trip.exception.InvalidTripStateException;
+import com.tourflow.mobility.trip.exception.TripAccessDeniedException;
+import com.tourflow.mobility.trip.exception.TripAlreadyExistsException;
+import com.tourflow.mobility.trip.exception.TripNotFoundException;
+import com.tourflow.mobility.trip.repository.TripRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +80,19 @@ public class TripService {
 
         Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new TripNotFoundException("Trip not found"));
+
+        return TripResponse.fromEntity(trip);
+    }
+
+    // Resolves the trip scheduled for a given booking, if one exists yet --
+    // lets a business discover which trip to log against for one of their
+    // tour's bookings without already knowing the trip ID. No ownership
+    // check, matching every other trip-by-ID read in this service.
+    @Transactional(readOnly = true)
+    public TripResponse getTripForBooking(UUID bookingId) {
+
+        Trip trip = tripRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new TripNotFoundException("No trip scheduled for this booking yet"));
 
         return TripResponse.fromEntity(trip);
     }

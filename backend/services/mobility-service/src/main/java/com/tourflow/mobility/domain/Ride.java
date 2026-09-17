@@ -1,4 +1,4 @@
-package com.tourflow.ride.domain;
+package com.tourflow.mobility.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

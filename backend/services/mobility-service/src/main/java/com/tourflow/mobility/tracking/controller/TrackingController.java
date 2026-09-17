@@ -1,8 +1,8 @@
-package com.tourflow.tracking.controller;
+package com.tourflow.mobility.tracking.controller;
 
-import com.tourflow.tracking.dto.RecordLocationRequest;
-import com.tourflow.tracking.dto.TripLocationResponse;
-import com.tourflow.tracking.service.TrackingService;
+import com.tourflow.mobility.tracking.dto.RecordLocationRequest;
+import com.tourflow.mobility.tracking.dto.TripLocationResponse;
+import com.tourflow.mobility.tracking.service.TrackingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

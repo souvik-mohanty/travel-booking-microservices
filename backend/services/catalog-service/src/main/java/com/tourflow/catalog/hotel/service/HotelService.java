@@ -1,13 +1,13 @@
-package com.tourflow.hotel.service;
+package com.tourflow.catalog.hotel.service;
 
-import com.tourflow.hotel.domain.Hotel;
-import com.tourflow.hotel.domain.HotelStatus;
-import com.tourflow.hotel.dto.CreateHotelRequest;
-import com.tourflow.hotel.dto.HotelResponse;
-import com.tourflow.hotel.dto.UpdateHotelRequest;
-import com.tourflow.hotel.exception.HotelNotFoundException;
-import com.tourflow.hotel.exception.UnauthorizedHotelAccessException;
-import com.tourflow.hotel.repository.HotelRepository;
+import com.tourflow.catalog.hotel.domain.Hotel;
+import com.tourflow.catalog.hotel.domain.HotelStatus;
+import com.tourflow.catalog.hotel.dto.CreateHotelRequest;
+import com.tourflow.catalog.hotel.dto.HotelResponse;
+import com.tourflow.catalog.hotel.dto.UpdateHotelRequest;
+import com.tourflow.catalog.hotel.exception.HotelNotFoundException;
+import com.tourflow.catalog.hotel.exception.UnauthorizedHotelAccessException;
+import com.tourflow.catalog.hotel.repository.HotelRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,6 +97,44 @@ public class HotelService {
                 request.state(),
                 request.country()
         );
+
+        return HotelResponse.fromEntity(hotelRepository.save(hotel));
+    }
+
+    // Admin moderation: suspend a hotel, e.g. for a policy violation.
+    // Idempotent -- suspending an already-suspended hotel is a no-op that
+    // returns 200 unchanged, matching the status-transition convention in
+    // docs/api/API-STANDARDS.md. Ownership doesn't matter here -- only the
+    // ADMIN role gate on this endpoint (see SecurityConfig) does.
+    @Transactional
+    public HotelResponse suspendHotel(UUID id) {
+
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new HotelNotFoundException("Hotel not found"));
+
+        if (hotel.getStatus() == HotelStatus.SUSPENDED) {
+            return HotelResponse.fromEntity(hotel);
+        }
+
+        hotel.setStatus(HotelStatus.SUSPENDED);
+        hotel.setUpdatedAt(OffsetDateTime.now());
+
+        return HotelResponse.fromEntity(hotelRepository.save(hotel));
+    }
+
+    // Admin moderation: lift a suspension.
+    @Transactional
+    public HotelResponse reinstateHotel(UUID id) {
+
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new HotelNotFoundException("Hotel not found"));
+
+        if (hotel.getStatus() == HotelStatus.ACTIVE) {
+            return HotelResponse.fromEntity(hotel);
+        }
+
+        hotel.setStatus(HotelStatus.ACTIVE);
+        hotel.setUpdatedAt(OffsetDateTime.now());
 
         return HotelResponse.fromEntity(hotelRepository.save(hotel));
     }

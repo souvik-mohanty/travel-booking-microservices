@@ -1,4 +1,4 @@
-package com.tourflow.review.domain;
+package com.tourflow.engagement.domain;
 
 public enum ReviewStatus {
     ACTIVE,

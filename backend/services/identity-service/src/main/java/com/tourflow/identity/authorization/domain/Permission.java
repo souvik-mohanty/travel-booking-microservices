@@ -1,4 +1,4 @@
-package com.tourflow.authorization.domain;
+package com.tourflow.identity.authorization.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

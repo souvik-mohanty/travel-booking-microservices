@@ -1,11 +1,11 @@
-package com.tourflow.notification.service;
+package com.tourflow.platform.service;
 
-import com.tourflow.notification.domain.Notification;
-import com.tourflow.notification.dto.CreateNotificationRequest;
-import com.tourflow.notification.dto.NotificationResponse;
-import com.tourflow.notification.exception.NotificationAccessDeniedException;
-import com.tourflow.notification.exception.NotificationNotFoundException;
-import com.tourflow.notification.repository.NotificationRepository;
+import com.tourflow.platform.domain.Notification;
+import com.tourflow.platform.dto.CreateNotificationRequest;
+import com.tourflow.platform.dto.NotificationResponse;
+import com.tourflow.platform.exception.NotificationAccessDeniedException;
+import com.tourflow.platform.exception.NotificationNotFoundException;
+import com.tourflow.platform.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

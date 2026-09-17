@@ -1,4 +1,4 @@
-package com.tourflow.notification.exception;
+package com.tourflow.platform.exception;
 
 public class NotificationAccessDeniedException extends RuntimeException {
 

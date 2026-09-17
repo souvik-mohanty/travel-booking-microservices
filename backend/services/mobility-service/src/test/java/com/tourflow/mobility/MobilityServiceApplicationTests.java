@@ -1,10 +1,10 @@
-package com.tourflow.ride;
+package com.tourflow.mobility;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RideServiceApplicationTests {
+class MobilityServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

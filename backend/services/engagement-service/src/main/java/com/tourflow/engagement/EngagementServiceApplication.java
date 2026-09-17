@@ -1,13 +1,13 @@
-package com.tourflow.review;
+package com.tourflow.engagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ReviewServiceApplication {
+public class EngagementServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReviewServiceApplication.class, args);
+		SpringApplication.run(EngagementServiceApplication.class, args);
 	}
 
 }

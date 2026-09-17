@@ -1,10 +1,10 @@
-package com.tourflow.audit.service;
+package com.tourflow.insights.audit.service;
 
-import com.tourflow.audit.domain.AuditLog;
-import com.tourflow.audit.dto.AuditLogResponse;
-import com.tourflow.audit.dto.CreateAuditLogRequest;
-import com.tourflow.audit.exception.AuditLogNotFoundException;
-import com.tourflow.audit.repository.AuditLogRepository;
+import com.tourflow.insights.audit.domain.AuditLog;
+import com.tourflow.insights.audit.dto.AuditLogResponse;
+import com.tourflow.insights.audit.dto.CreateAuditLogRequest;
+import com.tourflow.insights.audit.exception.AuditLogNotFoundException;
+import com.tourflow.insights.audit.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

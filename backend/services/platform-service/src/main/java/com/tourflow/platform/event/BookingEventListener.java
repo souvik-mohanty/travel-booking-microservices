@@ -1,7 +1,7 @@
-package com.tourflow.notification.event;
+package com.tourflow.platform.event;
 
-import com.tourflow.notification.dto.CreateNotificationRequest;
-import com.tourflow.notification.service.NotificationService;
+import com.tourflow.platform.dto.CreateNotificationRequest;
+import com.tourflow.platform.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;

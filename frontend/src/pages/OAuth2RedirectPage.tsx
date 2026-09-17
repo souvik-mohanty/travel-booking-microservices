@@ -40,7 +40,7 @@ export function OAuth2RedirectPage() {
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         <button
           onClick={() => navigate('/login', { replace: true })}
-          className="text-sm font-medium text-slate-900 underline dark:text-slate-100"
+          className="text-sm font-medium text-blue-600 underline decoration-blue-300 underline-offset-2 transition-colors duration-150 hover:text-blue-700 dark:text-blue-400"
         >
           Back to sign in
         </button>

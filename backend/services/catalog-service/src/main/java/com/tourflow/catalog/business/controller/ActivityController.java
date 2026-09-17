@@ -1,9 +1,9 @@
-package com.tourflow.business.controller;
+package com.tourflow.catalog.business.controller;
 
-import com.tourflow.business.dto.ActivityResponse;
-import com.tourflow.business.dto.CreateActivityRequest;
-import com.tourflow.business.dto.UpdateActivityRequest;
-import com.tourflow.business.service.ActivityService;
+import com.tourflow.catalog.business.dto.ActivityResponse;
+import com.tourflow.catalog.business.dto.CreateActivityRequest;
+import com.tourflow.catalog.business.dto.UpdateActivityRequest;
+import com.tourflow.catalog.business.service.ActivityService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

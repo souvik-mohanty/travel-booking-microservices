@@ -1,4 +1,4 @@
-package com.tourflow.guide.dto;
+package com.tourflow.catalog.guide.dto;
 
 import jakarta.validation.constraints.Min;
 

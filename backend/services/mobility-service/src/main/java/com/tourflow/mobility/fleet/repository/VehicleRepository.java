@@ -1,6 +1,6 @@
-package com.tourflow.fleet.repository;
+package com.tourflow.mobility.fleet.repository;
 
-import com.tourflow.fleet.domain.Vehicle;
+import com.tourflow.mobility.fleet.domain.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

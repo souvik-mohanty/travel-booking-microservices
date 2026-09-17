@@ -1,4 +1,4 @@
-package com.tourflow.tracking.domain;
+package com.tourflow.mobility.tracking.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

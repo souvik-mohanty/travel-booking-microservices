@@ -1,6 +1,6 @@
-package com.tourflow.ride.repository;
+package com.tourflow.mobility.repository;
 
-import com.tourflow.ride.domain.Ride;
+import com.tourflow.mobility.domain.Ride;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

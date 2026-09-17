@@ -1,6 +1,6 @@
-package com.tourflow.tour.event;
+package com.tourflow.catalog.event;
 
-import com.tourflow.tour.domain.Tour;
+import com.tourflow.catalog.domain.Tour;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

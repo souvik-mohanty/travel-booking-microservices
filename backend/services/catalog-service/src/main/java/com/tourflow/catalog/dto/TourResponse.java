@@ -1,6 +1,6 @@
-package com.tourflow.tour.dto;
+package com.tourflow.catalog.dto;
 
-import com.tourflow.tour.domain.Tour;
+import com.tourflow.catalog.domain.Tour;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

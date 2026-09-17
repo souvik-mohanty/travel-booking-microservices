@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_IDENTITY_SERVICE_URL: string
-  readonly VITE_TOUR_SERVICE_URL: string
-  readonly VITE_BOOKING_SERVICE_URL: string
-  readonly VITE_SEARCH_SERVICE_URL: string
+  // Every backend service is reached through the api-gateway's single base
+  // URL -- see src/lib/apiClient.ts for why this replaced the old
+  // one-axios-instance-per-service setup.
+  readonly VITE_API_BASE_URL: string
 }
 
 interface ImportMeta {

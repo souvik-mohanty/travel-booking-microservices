@@ -1,4 +1,4 @@
-package com.tourflow.business.domain;
+package com.tourflow.catalog.business.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +41,10 @@ public class Activity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    private ActivityCategory category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private ActivityStatus status;
 
     @Column(name = "created_at", nullable = false)
@@ -61,6 +65,7 @@ public class Activity {
             BigDecimal price,
             Integer durationMinutes,
             Integer maxParticipants,
+            ActivityCategory category,
             ActivityStatus status,
             OffsetDateTime createdAt,
             OffsetDateTime updatedAt
@@ -73,6 +78,7 @@ public class Activity {
         this.price = price;
         this.durationMinutes = durationMinutes;
         this.maxParticipants = maxParticipants;
+        this.category = category;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -110,6 +116,10 @@ public class Activity {
         return maxParticipants;
     }
 
+    public ActivityCategory getCategory() {
+        return category;
+    }
+
     public ActivityStatus getStatus() {
         return status;
     }
@@ -138,7 +148,8 @@ public class Activity {
             String location,
             BigDecimal price,
             Integer durationMinutes,
-            Integer maxParticipants
+            Integer maxParticipants,
+            ActivityCategory category
     ) {
         this.name = name;
         this.description = description;
@@ -146,6 +157,7 @@ public class Activity {
         this.price = price;
         this.durationMinutes = durationMinutes;
         this.maxParticipants = maxParticipants;
+        this.category = category;
         this.updatedAt = OffsetDateTime.now();
     }
 }

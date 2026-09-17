@@ -1,4 +1,4 @@
-package com.tourflow.tour.event;
+package com.tourflow.catalog.event;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public record EventEnvelope<T>(
                 eventType,
                 1,
                 OffsetDateTime.now(),
-                "tour-service",
+                "catalog-service",
                 UUID.randomUUID(),
                 payload
         );

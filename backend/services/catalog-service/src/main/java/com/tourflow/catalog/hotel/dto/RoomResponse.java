@@ -1,6 +1,6 @@
-package com.tourflow.hotel.dto;
+package com.tourflow.catalog.hotel.dto;
 
-import com.tourflow.hotel.domain.Room;
+import com.tourflow.catalog.hotel.domain.Room;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

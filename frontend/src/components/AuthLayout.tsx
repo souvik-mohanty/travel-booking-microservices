@@ -2,10 +2,13 @@ import type { InputHTMLAttributes, ReactNode } from 'react'
 
 export function AuthLayout({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-950">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h1 className="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
-        {children}
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 px-4 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
+      <div className="animate-scale-in w-full max-w-sm overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+        <div className="tf-gradient-bar h-1" />
+        <div className="p-8">
+          <h1 className="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+          {children}
+        </div>
       </div>
     </div>
   )
@@ -29,7 +32,7 @@ export function TextField({
       {label}
       <input
         {...props}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
       />
     </label>
   )

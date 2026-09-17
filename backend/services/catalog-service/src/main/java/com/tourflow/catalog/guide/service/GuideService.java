@@ -1,14 +1,14 @@
-package com.tourflow.guide.service;
+package com.tourflow.catalog.guide.service;
 
-import com.tourflow.guide.domain.Guide;
-import com.tourflow.guide.domain.GuideAvailability;
-import com.tourflow.guide.domain.GuideStatus;
-import com.tourflow.guide.dto.CreateGuideRequest;
-import com.tourflow.guide.dto.GuideResponse;
-import com.tourflow.guide.exception.GuideAccessDeniedException;
-import com.tourflow.guide.exception.GuideAlreadyExistsException;
-import com.tourflow.guide.exception.GuideNotFoundException;
-import com.tourflow.guide.repository.GuideRepository;
+import com.tourflow.catalog.guide.domain.Guide;
+import com.tourflow.catalog.guide.domain.GuideAvailability;
+import com.tourflow.catalog.guide.domain.GuideStatus;
+import com.tourflow.catalog.guide.dto.CreateGuideRequest;
+import com.tourflow.catalog.guide.dto.GuideResponse;
+import com.tourflow.catalog.guide.exception.GuideAccessDeniedException;
+import com.tourflow.catalog.guide.exception.GuideAlreadyExistsException;
+import com.tourflow.catalog.guide.exception.GuideNotFoundException;
+import com.tourflow.catalog.guide.repository.GuideRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,6 @@
-package com.tourflow.driver.repository;
+package com.tourflow.mobility.driver.repository;
 
-import com.tourflow.driver.domain.Driver;
+import com.tourflow.mobility.driver.domain.Driver;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

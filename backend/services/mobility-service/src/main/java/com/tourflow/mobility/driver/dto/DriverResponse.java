@@ -1,6 +1,6 @@
-package com.tourflow.driver.dto;
+package com.tourflow.mobility.driver.dto;
 
-import com.tourflow.driver.domain.Driver;
+import com.tourflow.mobility.driver.domain.Driver;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

@@ -62,12 +62,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = jwtService.extractRole(token);
 
             // Create an authenticated Spring Security identity. The principal is
-            // the user's UUID (not a UserDetails) since JWT auth needs no DB lookup
-            // per request -- everything Security needs is already in the token.
+            // the user's UUID as a String (not a UserDetails) since JWT auth needs
+            // no DB lookup per request -- everything Security needs is already in
+            // the token. Credentials carry the raw token itself, matching every
+            // other merged service's filter, so a controller can forward it
+            // on to a downstream service via authentication.getCredentials().
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
+                            userId.toString(),
+                            token,
                             List.of(new SimpleGrantedAuthority("ROLE_" + role))
                     );
 

@@ -1,6 +1,6 @@
-package com.tourflow.audit.repository;
+package com.tourflow.insights.audit.repository;
 
-import com.tourflow.audit.domain.AuditLog;
+import com.tourflow.insights.audit.domain.AuditLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

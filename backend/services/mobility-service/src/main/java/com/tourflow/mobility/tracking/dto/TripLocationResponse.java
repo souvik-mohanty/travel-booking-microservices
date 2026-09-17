@@ -1,6 +1,6 @@
-package com.tourflow.tracking.dto;
+package com.tourflow.mobility.tracking.dto;
 
-import com.tourflow.tracking.domain.TripLocation;
+import com.tourflow.mobility.tracking.domain.TripLocation;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

@@ -1,4 +1,4 @@
-package com.tourflow.audit.domain;
+package com.tourflow.insights.audit.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

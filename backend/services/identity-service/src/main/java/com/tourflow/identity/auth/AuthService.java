@@ -85,8 +85,10 @@ public class AuthService {
                         : request.lastName().trim()
         );
 
-        // New users are tourists by default.
-        user.setRole("TOURIST");
+        // Chosen at signup -- TOURIST or BUSINESS, validated by RegisterRequest's
+        // @Pattern. Google OAuth2 signups still always get TOURIST (see
+        // OAuth2UserProvisioner) since that flow has no form step to pick a role.
+        user.setRole(request.role());
 
         // Enable the account by default.
         user.setEnabled(true);

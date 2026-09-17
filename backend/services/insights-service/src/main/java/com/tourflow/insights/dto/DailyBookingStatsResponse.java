@@ -1,6 +1,6 @@
-package com.tourflow.analytics.dto;
+package com.tourflow.insights.dto;
 
-import com.tourflow.analytics.repository.DailyBookingStatsProjection;
+import com.tourflow.insights.repository.DailyBookingStatsProjection;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

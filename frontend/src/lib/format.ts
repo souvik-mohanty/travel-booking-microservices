@@ -17,3 +17,13 @@ export function formatDate(iso: string): string {
 export function formatDateRange(startIso: string, endIso: string): string {
   return `${formatDate(startIso)} - ${formatDate(endIso)}`
 }
+
+export function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}

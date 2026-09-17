@@ -1,6 +1,6 @@
-package com.tourflow.analytics.event;
+package com.tourflow.insights.event;
 
-import com.tourflow.analytics.service.AnalyticsService;
+import com.tourflow.insights.service.AnalyticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;

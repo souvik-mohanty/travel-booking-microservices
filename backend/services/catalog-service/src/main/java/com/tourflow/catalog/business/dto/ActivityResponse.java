@@ -1,6 +1,6 @@
-package com.tourflow.business.dto;
+package com.tourflow.catalog.business.dto;
 
-import com.tourflow.business.domain.Activity;
+import com.tourflow.catalog.business.domain.Activity;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -15,6 +15,7 @@ public record ActivityResponse(
         BigDecimal price,
         Integer durationMinutes,
         Integer maxParticipants,
+        String category,
         String status,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
@@ -30,6 +31,7 @@ public record ActivityResponse(
                 activity.getPrice(),
                 activity.getDurationMinutes(),
                 activity.getMaxParticipants(),
+                activity.getCategory().name(),
                 activity.getStatus().name(),
                 activity.getCreatedAt(),
                 activity.getUpdatedAt()

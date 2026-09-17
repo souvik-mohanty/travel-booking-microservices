@@ -1,13 +1,13 @@
-package com.tourflow.business.service;
+package com.tourflow.catalog.business.service;
 
-import com.tourflow.business.domain.Business;
-import com.tourflow.business.domain.BusinessStatus;
-import com.tourflow.business.dto.BusinessResponse;
-import com.tourflow.business.dto.CreateBusinessRequest;
-import com.tourflow.business.dto.UpdateBusinessRequest;
-import com.tourflow.business.exception.BusinessNotFoundException;
-import com.tourflow.business.exception.UnauthorizedBusinessAccessException;
-import com.tourflow.business.repository.BusinessRepository;
+import com.tourflow.catalog.business.domain.Business;
+import com.tourflow.catalog.business.domain.BusinessStatus;
+import com.tourflow.catalog.business.dto.BusinessResponse;
+import com.tourflow.catalog.business.dto.CreateBusinessRequest;
+import com.tourflow.catalog.business.dto.UpdateBusinessRequest;
+import com.tourflow.catalog.business.exception.BusinessNotFoundException;
+import com.tourflow.catalog.business.exception.UnauthorizedBusinessAccessException;
+import com.tourflow.catalog.business.repository.BusinessRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,5 +107,43 @@ public class BusinessService {
         return BusinessResponse.fromEntity(
                 businessRepository.save(business)
         );
+    }
+
+    // Admin moderation: suspend a business, e.g. for a policy violation.
+    // Idempotent -- suspending an already-suspended business is a no-op that
+    // returns 200 unchanged, matching the status-transition convention in
+    // docs/api/API-STANDARDS.md. Ownership doesn't matter here -- only the
+    // ADMIN role gate on this endpoint (see SecurityConfig) does.
+    @Transactional
+    public BusinessResponse suspendBusiness(UUID id) {
+
+        Business business = businessRepository.findById(id)
+                .orElseThrow(() -> new BusinessNotFoundException("Business not found"));
+
+        if (business.getStatus() == BusinessStatus.SUSPENDED) {
+            return BusinessResponse.fromEntity(business);
+        }
+
+        business.setStatus(BusinessStatus.SUSPENDED);
+        business.setUpdatedAt(OffsetDateTime.now());
+
+        return BusinessResponse.fromEntity(businessRepository.save(business));
+    }
+
+    // Admin moderation: lift a suspension.
+    @Transactional
+    public BusinessResponse reinstateBusiness(UUID id) {
+
+        Business business = businessRepository.findById(id)
+                .orElseThrow(() -> new BusinessNotFoundException("Business not found"));
+
+        if (business.getStatus() == BusinessStatus.ACTIVE) {
+            return BusinessResponse.fromEntity(business);
+        }
+
+        business.setStatus(BusinessStatus.ACTIVE);
+        business.setUpdatedAt(OffsetDateTime.now());
+
+        return BusinessResponse.fromEntity(businessRepository.save(business));
     }
 }

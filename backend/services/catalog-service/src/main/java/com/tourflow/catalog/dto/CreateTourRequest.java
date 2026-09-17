@@ -1,4 +1,4 @@
-package com.tourflow.tour.dto;
+package com.tourflow.catalog.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.FutureOrPresent;

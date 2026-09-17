@@ -1,4 +1,4 @@
-package com.tourflow.support.domain;
+package com.tourflow.engagement.support.domain;
 
 public enum TicketStatus {
     OPEN,

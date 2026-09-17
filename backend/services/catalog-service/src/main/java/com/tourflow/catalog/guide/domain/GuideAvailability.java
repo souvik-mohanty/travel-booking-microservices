@@ -1,4 +1,4 @@
-package com.tourflow.guide.domain;
+package com.tourflow.catalog.guide.domain;
 
 public enum GuideAvailability {
     AVAILABLE,

@@ -1,6 +1,6 @@
-package com.tourflow.file.service;
+package com.tourflow.platform.file.service;
 
-import com.tourflow.file.exception.FileStorageException;
+import com.tourflow.platform.file.exception.FileStorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

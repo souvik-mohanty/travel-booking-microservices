@@ -1,4 +1,4 @@
-package com.tourflow.hotel.domain;
+package com.tourflow.catalog.hotel.domain;
 
 public enum RoomStatus {
     DRAFT,

@@ -1,4 +1,4 @@
-package com.tourflow.review.dto;
+package com.tourflow.engagement.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

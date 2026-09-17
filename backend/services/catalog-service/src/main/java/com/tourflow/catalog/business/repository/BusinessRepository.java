@@ -1,6 +1,6 @@
-package com.tourflow.business.repository;
+package com.tourflow.catalog.business.repository;
 
-import com.tourflow.business.domain.Business;
+import com.tourflow.catalog.business.domain.Business;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

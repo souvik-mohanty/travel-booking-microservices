@@ -1,6 +1,6 @@
-package com.tourflow.analytics.repository;
+package com.tourflow.insights.repository;
 
-import com.tourflow.analytics.domain.BookingEventLog;
+import com.tourflow.insights.domain.BookingEventLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +35,19 @@ public interface BookingEventLogRepository extends JpaRepository<BookingEventLog
             @Param("from") OffsetDateTime from,
             @Param("to") OffsetDateTime to
     );
+
+    // "Business analytics": which tours are actually generating bookings and
+    // revenue. tourId is the only thing this service ever stores about a
+    // tour -- the frontend resolves title/destination/owner via
+    // tour-service, same cross-service-enrichment pattern used everywhere
+    // else (never a DB join across services).
+    @Query("""
+            SELECT b.tourId AS tourId,
+                   COUNT(b) AS bookingCount,
+                   SUM(b.totalPrice) AS revenue
+            FROM BookingEventLog b
+            GROUP BY b.tourId
+            ORDER BY SUM(b.totalPrice) DESC
+            """)
+    List<TourBookingStatsProjection> findStatsByTour();
 }

@@ -1,6 +1,6 @@
-package com.tourflow.file.dto;
+package com.tourflow.platform.file.dto;
 
-import com.tourflow.file.domain.FileMetadata;
+import com.tourflow.platform.file.domain.FileMetadata;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

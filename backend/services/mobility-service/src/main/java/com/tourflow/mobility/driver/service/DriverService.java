@@ -1,14 +1,14 @@
-package com.tourflow.driver.service;
+package com.tourflow.mobility.driver.service;
 
-import com.tourflow.driver.domain.Driver;
-import com.tourflow.driver.domain.DriverAvailability;
-import com.tourflow.driver.domain.DriverStatus;
-import com.tourflow.driver.dto.CreateDriverRequest;
-import com.tourflow.driver.dto.DriverResponse;
-import com.tourflow.driver.exception.DriverAccessDeniedException;
-import com.tourflow.driver.exception.DriverAlreadyExistsException;
-import com.tourflow.driver.exception.DriverNotFoundException;
-import com.tourflow.driver.repository.DriverRepository;
+import com.tourflow.mobility.driver.domain.Driver;
+import com.tourflow.mobility.driver.domain.DriverAvailability;
+import com.tourflow.mobility.driver.domain.DriverStatus;
+import com.tourflow.mobility.driver.dto.CreateDriverRequest;
+import com.tourflow.mobility.driver.dto.DriverResponse;
+import com.tourflow.mobility.driver.exception.DriverAccessDeniedException;
+import com.tourflow.mobility.driver.exception.DriverAlreadyExistsException;
+import com.tourflow.mobility.driver.exception.DriverNotFoundException;
+import com.tourflow.mobility.driver.repository.DriverRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

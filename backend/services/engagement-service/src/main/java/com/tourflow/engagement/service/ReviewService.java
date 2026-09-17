@@ -1,14 +1,14 @@
-package com.tourflow.review.service;
+package com.tourflow.engagement.service;
 
-import com.tourflow.review.client.BookingClient;
-import com.tourflow.review.client.BusinessClient;
-import com.tourflow.review.domain.Review;
-import com.tourflow.review.domain.ReviewStatus;
-import com.tourflow.review.dto.CreateReviewRequest;
-import com.tourflow.review.dto.ReviewResponse;
-import com.tourflow.review.dto.UpdateReviewRequest;
-import com.tourflow.review.exception.ReviewValidationException;
-import com.tourflow.review.repository.ReviewRepository;
+import com.tourflow.engagement.client.BookingClient;
+import com.tourflow.engagement.client.BusinessClient;
+import com.tourflow.engagement.domain.Review;
+import com.tourflow.engagement.domain.ReviewStatus;
+import com.tourflow.engagement.dto.CreateReviewRequest;
+import com.tourflow.engagement.dto.ReviewResponse;
+import com.tourflow.engagement.dto.UpdateReviewRequest;
+import com.tourflow.engagement.exception.ReviewValidationException;
+import com.tourflow.engagement.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

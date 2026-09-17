@@ -44,8 +44,8 @@ Resources that other services may reference historically (an `Activity` a
 past `Booking` points to, a `Room` a past reservation used) are never
 physically deleted. A `DELETED` status value is added to the entity's status
 enum instead, set via the same idempotent status-transition pattern as
-`activate`/`deactivate`. See `business-service`'s `Activity`/`ActivityStatus`
-and `hotel-service`'s `Room`/`RoomStatus` for the reference implementation.
+`activate`/`deactivate`. See `catalog-service`'s `Activity`/`ActivityStatus`
+and `catalog-service`'s `Room`/`RoomStatus` for the reference implementation.
 
 `audit_logs` are never deleted or updated at all -- there's no delete
 endpoint, full stop.
@@ -53,7 +53,7 @@ endpoint, full stop.
 ## Concurrency: pessimistic locking, not optimistic
 
 Where a resource has a limited, decrementable count that concurrent requests
-race over (`ride-service`'s `Ride.availableSeats`), the read-then-check-then-
+race over (`mobility-service`'s `Ride.availableSeats`), the read-then-check-then-
 write happens inside one `@Transactional` method against a row locked with
 `@Lock(LockModeType.PESSIMISTIC_WRITE)`:
 
@@ -66,8 +66,10 @@ Optional<Ride> findByIdForUpdate(UUID id);
 This was verified under real concurrent load (10 parallel requests booking
 seats on a 5-seat ride: exactly 5 succeeded, 5 correctly rejected,
 `availableSeats` never went negative), not just assumed correct from reading
-the code. This is the pattern to reuse for the next capacity-limited
-resource (hotel room inventory, activity capacity) until Redis distributed
+the code. The same pattern is also used by `catalog-service`'s
+`RoomReservationService` (locks the `Room` row before checking/decrementing
+availability across overlapping date ranges) -- reuse it for the next
+capacity-limited resource (activity capacity) until Redis distributed
 locking exists -- per the project's own architecture doc, database
 transactions are the primary consistency mechanism where Redis isn't set up.
 
@@ -94,3 +96,16 @@ recreating the local dev schema (`DROP SCHEMA <name>_service CASCADE`),
 always confirmed with the user first since it's a destructive action. Once a
 service has real data, this stops being appropriate and new migrations
 should be added instead of editing history.
+
+**Merging two services' migration histories** (as the 2026-09-06
+consolidation did six times -- see `ADR-002-SERVICE-CONSOLIDATION.md`) is a
+distinct case from either of the above: each constituent's migrations were
+concatenated into the merged service's `db/migration` folder and renumbered
+into one continuous sequence, preserving each constituent's internal
+relative order (e.g. catalog-service's `V1`-`V3` are tour-service's
+original three, `V4`-`V5` are business-service's, `V6`-`V7` are
+hotel-service's, `V8` is guide-service's). This is safe specifically because
+no two services being merged had ever shared a table name -- checked across
+every service before any merge happened. Like the cases above, this
+required dropping and recreating each affected local dev schema, confirmed
+with the user first.

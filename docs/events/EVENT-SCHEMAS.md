@@ -22,7 +22,7 @@ Every event, regardless of topic, should carry the same envelope:
 ```
 
 - `eventId`: unique per event, generated at publish time -- lets a consumer
-  deduplicate a redelivered message the same way `ride-service`'s seat
+  deduplicate a redelivered message the same way `mobility-service`'s seat
   booking and `payment-service`'s webhook handler are already idempotent by
   construction (a repeat of the same operation is a safe no-op, not an
   error). See `API-STANDARDS.md`'s idempotency section for the pattern this
@@ -56,14 +56,14 @@ Every event, regardless of topic, should carry the same envelope:
 ```
 
 Mirrors `BookingResponse` in shape (see the `dto/BookingResponse` record
-duplicated across `payment-service`, `trip-service`, and `review-service`
+duplicated across `payment-service`, `mobility-service`, and `engagement-service`
 today, each a hand-copied subset of `booking-service`'s own response).
 `currency` is always the literal `"INR"` (see `BookingEventPublisher`),
 matching how payment-service hardcodes the same literal today -- there's no
 multi-currency support anywhere in the project yet.
 
 **Known gap:** despite the envelope's `eventId` being described above as
-enabling consumer-side deduplication, `notification-service`'s
+enabling consumer-side deduplication, `platform-service`'s
 `BookingEventListener` doesn't actually do this yet -- it creates a new
 notification on every message it processes, full stop. A redelivered or
 reprocessed `BookingConfirmed` (e.g. after a consumer restart with no
@@ -71,13 +71,13 @@ committed offset) would currently produce a duplicate notification. Real
 dedup would mean tracking processed `eventId`s (or making notification
 creation itself idempotent per booking).
 
-**analytics-service does this dedup for real** -- its `BookingEventListener`
+**insights-service does this dedup for real** -- its `BookingEventListener`
 checks `existsByEventId` before inserting into `booking_event_log`, which
 also has a DB-level `UNIQUE` constraint on `event_id` as a backstop. A
 redelivered `BookingConfirmed` is a logged no-op there, not a duplicate row
 that would inflate `GET /api/analytics/bookings/summary`.
 
-### `TourPublished` (tour-service) -- live, exactly matches production code
+### `TourPublished` (catalog-service) -- live, exactly matches production code
 
 ```json
 {
@@ -97,9 +97,9 @@ Published from `PATCH /api/tours/{id}/publish` once a `DRAFT` tour
 transitions to `PUBLISHED` (idempotent -- publishing an already-`PUBLISHED`
 tour is a no-op and does not re-publish the event). Carries everything
 search-service needs to build a `TourDocument`, so it never calls back to
-tour-service to fetch anything.
+catalog-service to fetch anything.
 
-### `TourCancelled` (tour-service) -- live, exactly matches production code
+### `TourCancelled` (catalog-service) -- live, exactly matches production code
 
 ```json
 {
@@ -128,7 +128,7 @@ change on first implementation.
 }
 ```
 
-### `TripLocationUpdated` (tracking-service)
+### `TripLocationUpdated` (mobility-service)
 
 ```json
 {
@@ -141,7 +141,7 @@ change on first implementation.
 
 Would let notification/tracking consumers push over WebSocket instead of
 the tourist's app polling `GET /api/tracking/{tripId}/locations/latest`
-(tracking-service's current, deliberately scoped-down delivery mechanism --
+(mobility-service's current, deliberately scoped-down delivery mechanism --
 see `SERVICE-BOUNDARIES.md`).
 
 ## Not decided yet

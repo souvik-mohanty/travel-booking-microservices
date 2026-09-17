@@ -1,4 +1,4 @@
-package com.tourflow.business.domain;
+package com.tourflow.catalog.business.domain;
 
 public enum ActivityStatus {
     DRAFT,

@@ -1,6 +1,6 @@
-package com.tourflow.authorization.repository;
+package com.tourflow.identity.authorization.repository;
 
-import com.tourflow.authorization.domain.Role;
+import com.tourflow.identity.authorization.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

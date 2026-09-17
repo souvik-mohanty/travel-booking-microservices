@@ -1,6 +1,6 @@
-package com.tourflow.ride.dto;
+package com.tourflow.mobility.dto;
 
-import com.tourflow.ride.domain.RideType;
+import com.tourflow.mobility.domain.RideType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

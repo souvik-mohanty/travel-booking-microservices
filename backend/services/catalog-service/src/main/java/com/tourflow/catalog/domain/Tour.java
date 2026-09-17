@@ -1,4 +1,4 @@
-package com.tourflow.tour.domain;
+package com.tourflow.catalog.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

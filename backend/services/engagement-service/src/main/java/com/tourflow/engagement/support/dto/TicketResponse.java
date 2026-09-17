@@ -1,6 +1,6 @@
-package com.tourflow.support.dto;
+package com.tourflow.engagement.support.dto;
 
-import com.tourflow.support.domain.SupportTicket;
+import com.tourflow.engagement.support.domain.SupportTicket;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

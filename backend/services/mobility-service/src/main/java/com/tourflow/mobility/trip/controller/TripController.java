@@ -1,9 +1,9 @@
-package com.tourflow.trip.controller;
+package com.tourflow.mobility.trip.controller;
 
-import com.tourflow.trip.dto.AssignTripRequest;
-import com.tourflow.trip.dto.CreateTripRequest;
-import com.tourflow.trip.dto.TripResponse;
-import com.tourflow.trip.service.TripService;
+import com.tourflow.mobility.trip.dto.AssignTripRequest;
+import com.tourflow.mobility.trip.dto.CreateTripRequest;
+import com.tourflow.mobility.trip.dto.TripResponse;
+import com.tourflow.mobility.trip.service.TripService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +58,18 @@ public class TripController {
 
         return ResponseEntity.ok(
                 tripService.getTrip(id)
+        );
+    }
+
+    // Lets a business resolve "is there a trip for this booking yet, and
+    // what's its ID" without already knowing it -- see TripService.
+    @GetMapping("/booking/{bookingId}")
+    public ResponseEntity<TripResponse> getTripForBooking(
+            @PathVariable UUID bookingId
+    ) {
+
+        return ResponseEntity.ok(
+                tripService.getTripForBooking(bookingId)
         );
     }
 

@@ -1,4 +1,4 @@
-package com.tourflow.business.exception;
+package com.tourflow.catalog.business.exception;
 
 // Thrown when an authenticated user tries to manage a business/activity they don't own.
 // Unlike BusinessNotFoundException's "hide existence" use in creation flows, this is used

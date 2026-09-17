@@ -1,4 +1,4 @@
-package com.tourflow.ride.exception;
+package com.tourflow.mobility.exception;
 
 public class RideBookingNotFoundException extends RuntimeException {
 

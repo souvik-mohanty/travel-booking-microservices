@@ -1,4 +1,4 @@
-package com.tourflow.ride.security;
+package com.tourflow.mobility.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

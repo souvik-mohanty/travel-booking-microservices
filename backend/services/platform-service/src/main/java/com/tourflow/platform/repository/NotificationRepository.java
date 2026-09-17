@@ -1,6 +1,6 @@
-package com.tourflow.notification.repository;
+package com.tourflow.platform.repository;
 
-import com.tourflow.notification.domain.Notification;
+import com.tourflow.platform.domain.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

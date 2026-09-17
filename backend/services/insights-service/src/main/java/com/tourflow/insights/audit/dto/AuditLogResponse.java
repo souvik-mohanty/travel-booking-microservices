@@ -1,6 +1,6 @@
-package com.tourflow.audit.dto;
+package com.tourflow.insights.audit.dto;
 
-import com.tourflow.audit.domain.AuditLog;
+import com.tourflow.insights.audit.domain.AuditLog;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

@@ -2,6 +2,7 @@ package com.tourflow.identity.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     // Used to look up (or detect a first-time) OAuth2 login, e.g. provider=GOOGLE, providerId=Google's "sub" claim.
     Optional<User> findByProviderAndProviderId(AuthProvider provider, String providerId);
+
+    // Admin browsing: TOURIST vs BUSINESS vs ADMIN.
+    List<User> findByRole(String role);
 }

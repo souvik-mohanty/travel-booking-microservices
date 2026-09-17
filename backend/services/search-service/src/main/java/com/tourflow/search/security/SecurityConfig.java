@@ -72,6 +72,7 @@ public class SecurityConfig {
                         // Monitoring endpoint remains public.
                         .requestMatchers(
                                 "/actuator/health/**",
+                                "/actuator/prometheus",
                                 "/error"
                         ).permitAll()
 

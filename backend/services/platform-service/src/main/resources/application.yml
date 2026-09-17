@@ -1,9 +1,9 @@
 server:
-  port: 8097
+  port: 8088
 
 spring:
   application:
-    name: notification-service
+    name: platform-service
 
   kafka:
     # Port 9094 is Kafka's HOST listener (docker-compose.yml) -- advertised
@@ -11,11 +11,12 @@ spring:
     # resolvable by other containers on tourflow-network.
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
     consumer:
-      group-id: notification-service
+      group-id: platform-service
 
   datasource:
-    # Notification Service owns its own PostgreSQL schema.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=notification_service
+    # Platform Service (notification + file, merged 2026-09-06) owns its own
+    # PostgreSQL schema.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=platform_service
     username: ${DB_USERNAME:tour_user}
     password: ${DB_PASSWORD:tour_password}
     driver-class-name: org.postgresql.Driver
@@ -23,7 +24,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    schemas: notification_service
+    schemas: platform_service
     create-schemas: true
 
   jpa:
@@ -31,6 +32,16 @@ spring:
       # Flyway owns schema creation.
       ddl-auto: validate
     open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+# Local disk stand-in for S3, which isn't provisioned in this project yet --
+# same substitution pattern as local Postgres standing in for RDS.
+file:
+  storage-path: ${FILE_STORAGE_PATH:./uploads/platform-service}
 
 management:
   endpoints:

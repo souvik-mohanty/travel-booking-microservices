@@ -6,10 +6,13 @@ import type { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../t
 interface AuthContextValue {
   user: AuthUser | null
   isAuthenticated: boolean
-  login: (request: LoginRequest) => Promise<void>
-  register: (request: RegisterRequest) => Promise<void>
+  // Return the freshly-decoded user directly, rather than making the caller
+  // wait for a re-render to read the new value off context -- LoginPage
+  // needs the role immediately to pick a redirect target.
+  login: (request: LoginRequest) => Promise<AuthUser | null>
+  register: (request: RegisterRequest) => Promise<AuthUser | null>
   logout: () => Promise<void>
-  applySession: (auth: Pick<AuthResponse, 'accessToken' | 'refreshToken'>) => void
+  applySession: (auth: Pick<AuthResponse, 'accessToken' | 'refreshToken'>) => AuthUser | null
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -24,7 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const applySession = (auth: Pick<AuthResponse, 'accessToken' | 'refreshToken'>) => {
     saveSession(auth)
-    setUser(decodeAccessToken(auth.accessToken))
+    const decoded = decodeAccessToken(auth.accessToken)
+    setUser(decoded)
+    return decoded
   }
 
   const value = useMemo<AuthContextValue>(
@@ -34,11 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       applySession,
       login: async (request) => {
         const auth = await authApi.login(request)
-        applySession(auth)
+        return applySession(auth)
       },
       register: async (request) => {
         const auth = await authApi.register(request)
-        applySession(auth)
+        return applySession(auth)
       },
       logout: async () => {
         const session = loadSession()

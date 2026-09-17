@@ -1,4 +1,4 @@
-package com.tourflow.notification.domain;
+package com.tourflow.platform.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

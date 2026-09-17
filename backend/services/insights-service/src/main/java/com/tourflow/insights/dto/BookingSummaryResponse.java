@@ -1,4 +1,4 @@
-package com.tourflow.analytics.dto;
+package com.tourflow.insights.dto;
 
 import java.math.BigDecimal;
 

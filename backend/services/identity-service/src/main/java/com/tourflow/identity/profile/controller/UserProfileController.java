@@ -1,9 +1,9 @@
-package com.tourflow.user.controller;
+package com.tourflow.identity.profile.controller;
 
-import com.tourflow.user.dto.CreateUserProfileRequest;
-import com.tourflow.user.dto.UpdateUserProfileRequest;
-import com.tourflow.user.dto.UserProfileResponse;
-import com.tourflow.user.service.UserProfileService;
+import com.tourflow.identity.profile.dto.CreateUserProfileRequest;
+import com.tourflow.identity.profile.dto.UpdateUserProfileRequest;
+import com.tourflow.identity.profile.dto.UserProfileResponse;
+import com.tourflow.identity.profile.service.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

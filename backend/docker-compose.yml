@@ -11,6 +11,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    # Default max_connections (100) is too low for this project: every
+    # service opens its own HikariCP pool against this one shared instance
+    # (database-per-service via schema, not per-instance -- see
+    # docs/architecture/SERVICE-BOUNDARIES.md), and running all of them
+    # at once hit "FATAL: sorry, too many clients already" well before any
+    # of them were individually near their own pool's max-pool-size. Kept
+    # at 300 even after the 25->10 service consolidation (2026-09-06) since
+    # it's a harmless ceiling, not a per-service allocation.
+    command: ["postgres", "-c", "max_connections=300"]
     ports:
       - "5432:5432"
     volumes:
@@ -80,6 +89,12 @@ services:
       - kafka-data:/var/lib/kafka/data
     networks:
       - tourflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
 
 
   # ==============================
@@ -90,10 +105,26 @@ services:
     container_name: tour-kafka-ui
     restart: unless-stopped
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: tour-kafka
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+      # kafka-ui gives full read/write/delete access to every topic
+      # (including booking.events, which carries userId/price) with no auth
+      # by default -- gate it behind a login form. Credentials live in .env,
+      # same pattern as POSTGRES_USER/PASSWORD.
+      AUTH_TYPE: LOGIN_FORM
+      SPRING_SECURITY_USER_NAME: ${KAFKA_UI_USERNAME}
+      SPRING_SECURITY_USER_PASSWORD: ${KAFKA_UI_PASSWORD}
+
+      # Image defaults to DEBUG root logging, which is extremely noisy
+      # (a metrics-poll log line every ~30s per cluster). The app's own
+      # com.provectus.kafka.ui logger is set independently of root, so both
+      # need to be raised.
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_PROVECTUS_KAFKA_UI: INFO
     ports:
       - "8085:8080"
     networks:
@@ -163,6 +194,12 @@ services:
     volumes:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
+    # Every service is a host JVM process (not a container), so the
+    # tourflow-services scrape job in prometheus.yml targets
+    # host.docker.internal:<port>. Docker Desktop resolves that automatically;
+    # this extra_hosts entry makes it resolve on Linux Docker too.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - tourflow-network
 
@@ -176,10 +213,21 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
     ports:
-      - "3000:3000"
+      # Host port 3000 is reserved for the frontend dev server (and matches
+      # identity-service's default app.oauth2.authorized-redirect-uri) --
+      # Grafana moves to 3030 instead of colliding with it.
+      - "3030:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+      # Provisions the Prometheus datasource and the TourFlow Services
+      # dashboard automatically on startup -- see
+      # config/grafana/provisioning/{datasources,dashboards} and
+      # config/grafana/dashboards.
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
     networks:
       - tourflow-network
 

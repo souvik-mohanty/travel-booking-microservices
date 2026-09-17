@@ -1,11 +1,11 @@
-package com.tourflow.authorization.service;
+package com.tourflow.identity.authorization.service;
 
-import com.tourflow.authorization.domain.Permission;
-import com.tourflow.authorization.dto.CreatePermissionRequest;
-import com.tourflow.authorization.dto.PermissionResponse;
-import com.tourflow.authorization.exception.AlreadyExistsException;
-import com.tourflow.authorization.exception.PermissionNotFoundException;
-import com.tourflow.authorization.repository.PermissionRepository;
+import com.tourflow.identity.authorization.domain.Permission;
+import com.tourflow.identity.authorization.dto.CreatePermissionRequest;
+import com.tourflow.identity.authorization.dto.PermissionResponse;
+import com.tourflow.identity.authorization.exception.AlreadyExistsException;
+import com.tourflow.identity.authorization.exception.PermissionNotFoundException;
+import com.tourflow.identity.authorization.repository.PermissionRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

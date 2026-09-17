@@ -1,4 +1,4 @@
-package com.tourflow.user.dto;
+package com.tourflow.identity.profile.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,8 +1,8 @@
-package com.tourflow.tour.controller;
+package com.tourflow.catalog.controller;
 
-import com.tourflow.tour.dto.CreateTourRequest;
-import com.tourflow.tour.dto.TourResponse;
-import com.tourflow.tour.service.TourService;
+import com.tourflow.catalog.dto.CreateTourRequest;
+import com.tourflow.catalog.dto.TourResponse;
+import com.tourflow.catalog.service.TourService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

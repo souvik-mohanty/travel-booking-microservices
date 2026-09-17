@@ -1,8 +1,8 @@
-package com.tourflow.audit.controller;
+package com.tourflow.insights.audit.controller;
 
-import com.tourflow.audit.dto.AuditLogResponse;
-import com.tourflow.audit.dto.CreateAuditLogRequest;
-import com.tourflow.audit.service.AuditLogService;
+import com.tourflow.insights.audit.dto.AuditLogResponse;
+import com.tourflow.insights.audit.dto.CreateAuditLogRequest;
+import com.tourflow.insights.audit.service.AuditLogService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -4,6 +4,12 @@ import com.tourflow.identity.auth.dto.ErrorResponse;
 import com.tourflow.identity.auth.exception.AccountDisabledException;
 import com.tourflow.identity.auth.exception.EmailAlreadyRegisteredException;
 import com.tourflow.identity.auth.exception.InvalidCredentialsException;
+import com.tourflow.identity.authorization.exception.AlreadyExistsException;
+import com.tourflow.identity.authorization.exception.PermissionNotFoundException;
+import com.tourflow.identity.authorization.exception.RoleNotFoundException;
+import com.tourflow.identity.profile.exception.UserProfileAlreadyExistsException;
+import com.tourflow.identity.profile.exception.UserProfileNotFoundException;
+import com.tourflow.identity.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -34,6 +40,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccountDisabledException.class)
     public ResponseEntity<ErrorResponse> handleAccountDisabled(AccountDisabledException ex) {
         return build(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<String> handleRoleNotFound(RoleNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public ResponseEntity<String> handlePermissionNotFound(PermissionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<String> handleAlreadyExists(AlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserProfileNotFoundException.class)
+    public ResponseEntity<String> handleUserProfileNotFound(UserProfileNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserProfileAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserProfileAlreadyExists(UserProfileAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     // Triggered by @Valid on the request DTOs (RegisterRequest/LoginRequest).

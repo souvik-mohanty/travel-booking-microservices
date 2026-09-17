@@ -1,4 +1,4 @@
-package com.tourflow.ride.domain;
+package com.tourflow.mobility.domain;
 
 public enum RideStatus {
     SCHEDULED,

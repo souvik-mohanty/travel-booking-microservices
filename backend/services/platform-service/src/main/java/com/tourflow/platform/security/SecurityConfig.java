@@ -1,4 +1,4 @@
-package com.tourflow.notification.security;
+package com.tourflow.platform.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -42,11 +42,13 @@ public class SecurityConfig {
                         // Monitoring endpoint remains public.
                         .requestMatchers(
                                 "/actuator/health/**",
+                                "/actuator/prometheus",
                                 "/error"
                         ).permitAll()
 
-                        // All Notification APIs require authentication.
+                        // All Notification and File APIs require authentication.
                         .requestMatchers("/api/notifications/**").authenticated()
+                        .requestMatchers("/api/files/**").authenticated()
 
                         .anyRequest().authenticated()
                 )
