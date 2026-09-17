@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: booking-service
+
+  kafka:
+    # Port 9094 is Kafka's HOST listener (docker-compose.yml) -- advertised
+    # as localhost, unlike the 9092 PLAINTEXT listener which is only
+    # resolvable by other containers on tourflow-network.
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+
+  datasource:
+    # Connect to the shared PostgreSQL database using the booking_service schema.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=booking_service
+    username: ${DB_USERNAME:tour_user}
+    password: ${DB_PASSWORD:tour_password}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    # Enable Flyway database migrations.
+    enabled: true
+
+    # Store booking-service migrations in this directory.
+    locations: classpath:db/migration
+
+    # Keep booking-service database objects isolated from other services.
+    schemas: booking_service
+
+    # Create the schema automatically on the first startup.
+    create-schemas: true
+
+  jpa:
+    hibernate:
+      # Hibernate validates the schema created by Flyway.
+      ddl-auto: validate
+
+    # Disable Open Session in View.
+    open-in-view: false
+
+    properties:
+      hibernate:
+        # Make SQL easier to read during development.
+        format_sql: true
+
+# Origins the frontend SPA may call this service from (see SecurityConfig's
+# CorsConfigurationSource). 3000 is vite.config.ts's configured port; 3001 is
+# where it actually lands if something else already holds 3000; 5173 is
+# Vite's own default if the port override is ever removed.
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001,http://localhost:5173}
+
+server:
+  # Booking service runs on port 8083.
+  port: 8083
+
+management:
+  endpoints:
+    web:
+      # Expose health and monitoring endpoints.
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      # Show database and other component health details.
+      show-details: always
+
+# Must match the JWT secret used by identity-service, or JwtService here won't
+# be able to verify tokens it issued.
+jwt:
+  # Override with JWT_SECRET in production instead of using this development value.
+  secret: ${JWT_SECRET:tourflow-development-secret-key-must-be-at-least-32-bytes-long}

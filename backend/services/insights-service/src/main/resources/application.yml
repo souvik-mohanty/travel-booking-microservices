@@ -1,0 +1,47 @@
+server:
+  port: 8100
+
+spring:
+  application:
+    name: analytics-service
+
+  datasource:
+    # Analytics Service owns its own PostgreSQL schema.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=analytics_service
+    username: ${DB_USERNAME:tour_user}
+    password: ${DB_PASSWORD:tour_password}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    schemas: analytics_service
+    create-schemas: true
+
+  jpa:
+    hibernate:
+      # Flyway owns schema creation.
+      ddl-auto: validate
+    open-in-view: false
+
+  kafka:
+    # Port 9094 is Kafka's HOST listener (docker-compose.yml) -- advertised
+    # as localhost, unlike the 9092 PLAINTEXT listener which is only
+    # resolvable by other containers on tourflow-network.
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    consumer:
+      group-id: analytics-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+# Must match identity-service.
+jwt:
+  secret: ${JWT_SECRET:tourflow-development-secret-key-must-be-at-least-32-bytes-long}

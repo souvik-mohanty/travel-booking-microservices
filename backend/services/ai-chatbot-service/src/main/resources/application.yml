@@ -1,0 +1,39 @@
+server:
+  port: 8104
+
+spring:
+  application:
+    name: ai-chatbot-service
+
+  datasource:
+    # AiChatbot Service owns its own PostgreSQL schema.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=aichatbot_service
+    username: ${DB_USERNAME:tour_user}
+    password: ${DB_PASSWORD:tour_password}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    schemas: aichatbot_service
+    create-schemas: true
+
+  jpa:
+    hibernate:
+      # Flyway owns schema creation.
+      ddl-auto: validate
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+# Must match identity-service.
+jwt:
+  secret: ${JWT_SECRET:tourflow-development-secret-key-must-be-at-least-32-bytes-long}
