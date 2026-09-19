@@ -20,12 +20,23 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<String, String> producerFactory(
-            @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers
+            @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
+            @Value("${spring.kafka.security.protocol:PLAINTEXT}") String securityProtocol,
+            @Value("${spring.kafka.sasl.mechanism:PLAIN}") String saslMechanism,
+            @Value("${spring.kafka.sasl.jaas-config:}") String saslJaasConfig
     ) {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        // Blank/PLAINTEXT locally (see docker-compose.yml); set to SASL_SSL with
+        // Upstash-issued credentials in the "render" deployment, which has no
+        // unauthenticated Kafka listener to connect to.
+        config.put("security.protocol", securityProtocol);
+        if (!saslJaasConfig.isBlank()) {
+            config.put("sasl.mechanism", saslMechanism);
+            config.put("sasl.jaas.config", saslJaasConfig);
+        }
         return new DefaultKafkaProducerFactory<>(config);
     }
 

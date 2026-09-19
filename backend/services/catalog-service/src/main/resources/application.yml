@@ -10,7 +10,7 @@ spring:
     # public -- keeps this service's schema and migration history independent
     # of identity-service's, even though both currently share the one
     # tour_planner database/Postgres instance.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=catalog_service
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=catalog_service&sslmode=${DB_SSLMODE:disable}&channelBinding=${DB_CHANNEL_BINDING:disable}
     username: ${DB_USERNAME:tour_user}
     password: ${DB_PASSWORD:tour_password}
     driver-class-name: org.postgresql.Driver
@@ -36,6 +36,14 @@ spring:
     # as localhost, unlike the 9092 PLAINTEXT listener which is only
     # resolvable by other containers on tourflow-network.
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    # PLAINTEXT/no-auth locally; the "render" deployment sets these to
+    # SASL_SSL with Upstash-issued credentials, since it has no
+    # unauthenticated Kafka listener to connect to (see KafkaProducerConfig).
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    sasl:
+      mechanism: ${KAFKA_SASL_MECHANISM:PLAIN}
+      jaas-config: ${KAFKA_SASL_JAAS_CONFIG:}
 
 # Origins the frontend SPA may call this service from (see SecurityConfig's
 # CorsConfigurationSource). 3000 is vite.config.ts's configured port; 3001 is

@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
 
 // Every backend path (auth, tours, bookings, payments, reviews, tickets,
@@ -45,17 +46,53 @@ async function refreshAccessToken(): Promise<string | null> {
   return refreshPromise
 }
 
-apiClient.interceptors.request.use((config) => {
+// Free-tier hosting (Render) sleeps a service after 15 minutes idle and can
+// take up to ~a minute to wake back up on the next request -- without this,
+// a cold hit just looks like the app hanging. Only shown once across however
+// many requests are slow at once (a dashboard firing several queries during
+// a cold start shouldn't stack up several toasts), and only if a request is
+// still pending after SLOW_REQUEST_MS, so it never fires on a normal warm hit.
+type ColdStartTrackedConfig = InternalAxiosRequestConfig & {
+  _slowTimer?: ReturnType<typeof setTimeout>
+  _slowTriggered?: boolean
+}
+const SLOW_REQUEST_MS = 4000
+const COLD_START_TOAST_ID = 'cold-start'
+let slowRequestCount = 0
+
+function clearColdStartTracking(config?: ColdStartTrackedConfig) {
+  if (!config) return
+  clearTimeout(config._slowTimer)
+  if (config._slowTriggered) {
+    slowRequestCount = Math.max(0, slowRequestCount - 1)
+    if (slowRequestCount === 0) {
+      toast.dismiss(COLD_START_TOAST_ID)
+    }
+  }
+}
+
+apiClient.interceptors.request.use((config: ColdStartTrackedConfig) => {
   const { tokens } = useAuthStore.getState()
   if (tokens?.accessToken) {
     config.headers.set('Authorization', `Bearer ${tokens.accessToken}`)
   }
+  config._slowTimer = setTimeout(() => {
+    config._slowTriggered = true
+    slowRequestCount += 1
+    toast.loading('Waking up the server… this can take up to a minute on free-tier hosting.', {
+      id: COLD_START_TOAST_ID,
+    })
+  }, SLOW_REQUEST_MS)
   return config
 })
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    clearColdStartTracking(response.config as ColdStartTrackedConfig)
+    return response
+  },
   async (error: AxiosError) => {
+    clearColdStartTracking(error.config as ColdStartTrackedConfig)
     const originalRequest = error.config as (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined
     const isAuthEndpoint = AUTH_ENDPOINTS.some((path) => originalRequest?.url?.includes(path))
 

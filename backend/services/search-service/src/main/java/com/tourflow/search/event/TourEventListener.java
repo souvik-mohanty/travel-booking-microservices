@@ -4,6 +4,7 @@ import com.tourflow.search.document.TourDocument;
 import com.tourflow.search.repository.TourSearchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -15,8 +16,11 @@ import java.util.UUID;
 // Keeps the "tours" Elasticsearch index in sync with tour-service. Parses
 // the envelope as a JsonNode tree rather than a typed record, same as
 // notification-service's BookingEventListener -- keeps this consumer loosely
-// coupled to the producer's exact payload shape.
+// coupled to the producer's exact payload shape. Not registered when
+// SEARCH_BACKEND=catalog: there's no Elasticsearch index to keep in sync
+// then (see CatalogFallbackTourSearchService).
 @Component
+@ConditionalOnProperty(name = "search.backend", havingValue = "elasticsearch", matchIfMissing = true)
 public class TourEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(TourEventListener.class);

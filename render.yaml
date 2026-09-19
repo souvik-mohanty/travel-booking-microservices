@@ -1,0 +1,150 @@
+# Render Blueprint for TourFlow's backend. Deploys as 6 free web services:
+# - tourflow-core: gateway + identity + catalog + booking + payment, bundled
+#   into one deployable (see backend/deploy/core) so there's exactly one
+#   cold start instead of 5 chained ones. Keep this one warm (see the
+#   deployment README for why free-tier keep-alive pinging doesn't scale to
+#   all 6 services, but is fine for just this one).
+# - tourflow-mobility, tourflow-engagement, tourflow-platform,
+#   tourflow-insights, tourflow-search: lower-traffic services, deployed
+#   standalone and left to free-tier-sleep independently.
+#
+# Postgres and Kafka are NOT deployed here -- free Render services can't
+# accept inbound private-network connections (see the deployment README),
+# so the 5 standalone services couldn't reach data stores living inside
+# tourflow-core. Use external managed free tiers instead (Neon for Postgres,
+# Upstash for Kafka) and fill in tourflow-shared's env vars in the Render
+# dashboard after first deploy. Redis is not used by any service today, so
+# it's intentionally not provisioned at all.
+
+envVarGroups:
+  - name: tourflow-shared
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+      - key: DB_CHANNEL_BINDING
+        value: require
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        sync: false
+      - key: KAFKA_SECURITY_PROTOCOL
+        value: SASL_SSL
+      - key: KAFKA_SASL_MECHANISM
+        sync: false
+      - key: KAFKA_SASL_JAAS_CONFIG
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+services:
+  - type: web
+    name: tourflow-core
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/core/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+    envVars:
+      - key: OAUTH2_REDIRECT_URI
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+
+  - type: web
+    name: tourflow-mobility
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/mobility-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+
+  - type: web
+    name: tourflow-engagement
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/engagement-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+
+  - type: web
+    name: tourflow-platform
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/platform-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+
+  - type: web
+    name: tourflow-insights
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/insights-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+
+  - type: web
+    name: tourflow-search
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/search-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVarGroups:
+      - tourflow-shared
+    envVars:
+      # Elastic Cloud (serverless) endpoint + the base64 "encoded" API key.
+      - key: ELASTICSEARCH_URIS
+        sync: false
+      - key: SPRING_ELASTICSEARCH_APIKEY
+        sync: false
+      # Elastic Cloud serverless doesn't support the _cluster/health call
+      # Spring's Elasticsearch health indicator makes (HTTP 410), which would
+      # leave /actuator/health permanently DOWN and Render restart-looping
+      # this service.
+      - key: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
+        value: "false"
+      # Optional escape hatch: "catalog" skips Elasticsearch entirely and
+      # filters catalog-service's tour list in memory instead. Leave at the
+      # default while Elasticsearch is available.
+      - key: SEARCH_BACKEND
+        value: elasticsearch

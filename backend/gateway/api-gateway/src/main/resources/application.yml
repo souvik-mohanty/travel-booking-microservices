@@ -4,6 +4,14 @@ spring:
 
   cloud:
     gateway:
+      # A free-tier downstream service (see backend/deploy) can take up to
+      # ~60s to cold-start on its first hit after 15 minutes idle -- the
+      # default read-timeout is far shorter than that, so without this the
+      # gateway would 504 long before a sleeping service finishes waking up.
+      httpclient:
+        connect-timeout: 5000
+        read-timeout: 90000
+
       server:
         webmvc:
           # Every service is called by its full "/api/..." path as-is -- no

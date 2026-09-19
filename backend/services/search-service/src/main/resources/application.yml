@@ -19,6 +19,12 @@ spring:
     # convention as reaching Postgres via localhost:5432 and Kafka via
     # localhost:9094 instead of the containers' network aliases.
     uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    # No api-key here on purpose: Boot only skips the Authorization header when
+    # the value is null, so a blank default (${VAR:}) would send a bogus empty
+    # "ApiKey " header to plain local Elasticsearch. Elastic Cloud sets it via
+    # the SPRING_ELASTICSEARCH_APIKEY env var (Spring's own relaxed binding for
+    # spring.elasticsearch.api-key) -- the base64 "encoded" key exactly as
+    # Elastic Cloud displays it.
 
   kafka:
     # Port 9094 is Kafka's HOST listener (docker-compose.yml) -- advertised
@@ -27,6 +33,22 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
     consumer:
       group-id: search-service
+
+# "elasticsearch" (default) or "catalog" -- see TourSearchService. "catalog" is
+# for deployments with no Elasticsearch; it also needs
+# MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED=false or the ES health indicator
+# will report DOWN forever.
+search:
+  backend: ${SEARCH_BACKEND:elasticsearch}
+
+# Used only by CatalogFallbackTourSearchService (SEARCH_BACKEND=catalog): in
+# production this is the core deployable's public Render URL (the API
+# gateway), since catalog-service itself has no port exposed outside that
+# container -- the gateway already proxies /api/tours/** to it. Locally it
+# points straight at catalog-service.
+services:
+  catalog:
+    base-url: ${CATALOG_SERVICE_URL:http://localhost:8082}
 
 management:
   endpoints:

@@ -24,7 +24,10 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory(
             @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
-            @Value("${spring.kafka.consumer.group-id}") String groupId
+            @Value("${spring.kafka.consumer.group-id}") String groupId,
+            @Value("${spring.kafka.security.protocol:PLAINTEXT}") String securityProtocol,
+            @Value("${spring.kafka.sasl.mechanism:PLAIN}") String saslMechanism,
+            @Value("${spring.kafka.sasl.jaas-config:}") String saslJaasConfig
     ) {
 
         Map<String, Object> config = new HashMap<>();
@@ -35,6 +38,15 @@ public class KafkaConsumerConfig {
         // New consumer group: start from the beginning of the topic rather
         // than only seeing events published after this service first boots.
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        // Blank/PLAINTEXT locally (see docker-compose.yml); set to SASL_SSL with
+        // Upstash-issued credentials in the "render" deployment, which has no
+        // unauthenticated Kafka listener to connect to.
+        config.put("security.protocol", securityProtocol);
+        if (!saslJaasConfig.isBlank()) {
+            config.put("sasl.mechanism", saslMechanism);
+            config.put("sasl.jaas.config", saslJaasConfig);
+        }
 
         return new DefaultKafkaConsumerFactory<>(config);
     }

@@ -1,0 +1,144 @@
+# Deploying TourFlow's backend to Render (free tier)
+
+## Why it's split this way
+
+Render's free plan spins a service down after 15 minutes idle, cold-starts
+take up to ~a minute, and — critically — **free services can only initiate
+private-network connections, not receive them**. That last point is why
+Postgres/Kafka/Elasticsearch can't just live inside one of these containers
+and be reached by the others: a free service can't accept that connection.
+
+So this deploys as:
+
+- **tourflow-core** — gateway + identity + catalog + booking + payment,
+  bundled into one Docker image (`deploy/core`) that runs all 5 JVMs and
+  exposes only the gateway's port. One cold start instead of five chained
+  ones. Keep this one warm (see "Keeping tourflow-core warm" below).
+- **tourflow-mobility / tourflow-engagement / tourflow-platform /
+  tourflow-insights / tourflow-search** — standalone, free-tier-sleep
+  independently, cold-start on demand. Lower traffic, acceptable latency hit.
+- **Postgres → Neon**, **Kafka → Upstash** — external managed free tiers,
+  reachable by every service above as a normal outbound call (the free-tier
+  restriction only blocks Render-to-Render inbound traffic, not calls to an
+  external host). **Redis is not provisioned** — no service in this codebase
+  actually uses it today.
+- **Elasticsearch → Elastic Cloud** (serverless project), reached over HTTPS
+  with an API key (`ELASTICSEARCH_URIS` + `SPRING_ELASTICSEARCH_APIKEY`).
+  Serverless doesn't support the health API Spring's ES health indicator
+  calls, so `MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED=false` is set too (or
+  Render's health check would see the service as permanently DOWN). Elastic
+  Cloud free trials are time-limited — if it lapses, set
+  `SEARCH_BACKEND=catalog` on tourflow-search to switch to
+  `CatalogFallbackTourSearchService`, which
+  calls tourflow-core's `/api/tours` directly and filters in memory (fine at
+  demo scale, not a real index). Note the ES index is only populated by
+  `tour.events` from Kafka, so **search needs Upstash Kafka working** too.
+  `tourflow-search` creates the `tours` index itself on first boot
+  (`ToursIndexInitializer`) — serverless rejects the shard/replica settings
+  Spring Data would otherwise send.
+
+## 1. Create a free Neon Postgres project
+
+1. neon.tech → new project → any region.
+2. From the connection details panel, note: host, database name, username,
+   password. Use the **pooled connection** host (the one with `-pooler` in
+   it) — handles the many-small-connections pattern of 5+ JVMs better than
+   the direct host.
+3. These become `DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` below.
+   `DB_PORT` stays `5432`, `DB_SSLMODE` stays `require`.
+4. Neon's own connection string includes `channel_binding=require` — that's
+   the **libpq** (psql/Node) parameter name. The Java JDBC driver uses a
+   different name for the same thing, `channelBinding` (camelCase), which is
+   what's actually in each service's JDBC URL template
+   (`&channelBinding=${DB_CHANNEL_BINDING:disable}`). Set `DB_CHANNEL_BINDING`
+   to `require` — don't try to paste `channel_binding` itself into any env
+   var, pgjdbc won't recognize that name.
+
+Every service connects to the **same** Neon database, each with its own
+`currentSchema` in its JDBC URL — identical to the local docker-compose setup,
+just pointed at Neon instead of localhost. Flyway creates each service's
+schema on first boot (`create-schemas: true`), so no manual schema setup.
+
+## 2. Create a free Upstash Kafka cluster
+
+1. upstash.com → Kafka → create cluster (any region close to Render's
+   `singapore` region in render.yaml, or change both to match).
+2. From the cluster details, note the bootstrap endpoint, username, and
+   password.
+3. Map them to:
+   - `KAFKA_BOOTSTRAP_SERVERS` = the bootstrap endpoint
+   - `KAFKA_SASL_MECHANISM` = `SCRAM-SHA-256` (confirm against Upstash's own
+     connection panel — this is their documented default at time of writing,
+     but verify before deploying)
+   - `KAFKA_SASL_JAAS_CONFIG` = 
+     `org.apache.kafka.common.security.scram.ScramLoginModule required username="<username>" password="<password>";`
+     (keep the literal quotes and trailing semicolon)
+4. Create the topics `tour.events` and `booking.events` in the Upstash
+   console (or let auto-create handle it if enabled on the cluster).
+
+## 3. Deploy the Blueprint
+
+1. Push this repo to GitHub if you haven't (see the root `render.yaml`).
+2. Render dashboard → New → Blueprint → point at the repo → it finds
+   `render.yaml` and lists all 6 services.
+3. Fill in the `tourflow-shared` env var group's `sync: false` values
+   (`DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`,
+   `KAFKA_BOOTSTRAP_SERVERS`, `KAFKA_SASL_MECHANISM`, `KAFKA_SASL_JAAS_CONFIG`,
+   `CORS_ALLOWED_ORIGINS` — use a placeholder like
+   `https://placeholder.vercel.app` for now, you'll fix it after deploying the
+   frontend in step 5).
+   `JWT_SECRET` is auto-generated by Render and shared correctly across all 6
+   services already — leave it alone.
+4. On `tourflow-core`, also fill in `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` /
+   `RAZORPAY_WEBHOOK_SECRET`, and `OAUTH2_REDIRECT_URI` (set once you know the
+   frontend's URL; format: `https://<your-vercel-app>.vercel.app/oauth2/redirect`).
+   Leave `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` blank unless you want Google
+   login live in production — if you do, also add `oauth2` to `tourflow-core`'s
+   `SPRING_PROFILES_ACTIVE` (e.g. `render,oauth2`).
+5. Deploy. `tourflow-core` will take longest to build (5 Maven builds in one
+   Dockerfile) — expect several minutes on the first deploy.
+
+## 4. (Only for SEARCH_BACKEND=catalog) Wire tourflow-search to tourflow-core
+
+Not needed while search uses Elasticsearch. If you switch to the catalog
+fallback: once `tourflow-core` has a public URL (e.g.
+`https://tourflow-core.onrender.com`), set `tourflow-search`'s
+`CATALOG_SERVICE_URL` env var to it and redeploy `tourflow-search`.
+
+## 5. Deploy the frontend to Vercel
+
+1. Vercel dashboard → New Project → import this repo → set **Root Directory**
+   to `frontend`. Vercel auto-detects the Vite preset.
+2. Add environment variable `VITE_API_BASE_URL` = `tourflow-core`'s public URL.
+3. Deploy. Once you have the Vercel URL, go back to Render and update
+   `tourflow-shared`'s `CORS_ALLOWED_ORIGINS` to that real URL (replacing the
+   placeholder from step 3), and `tourflow-core`'s `OAUTH2_REDIRECT_URI` the
+   same way. Both take effect on the next deploy/restart of the services
+   using them.
+
+## Keeping tourflow-core warm
+
+Render's 750 free instance-hours/month are shared across every free service
+in your workspace — keeping all 6 always-on would need ~7,300 hours and blow
+through that immediately. But keeping **just tourflow-core** warm (~730
+hrs/month) fits comfortably, and it's the one on the user's critical path
+(auth, browsing, booking, payment). Use a free external pinger — e.g.
+cron-job.org or UptimeRobot — hitting `https://tourflow-core.onrender.com/actuator/health`
+every ~10 minutes. Leave the other 5 services unpinged; they'll cold-start
+(~30-60s) on their first hit after being idle, which is an acceptable
+tradeoff for lower-traffic features (mobility, reviews/tickets,
+notifications/files, analytics, search).
+
+## Known limitations of this deployment (by design, not oversight)
+
+- **tourflow-core's RAM budget is tight.** 5 JVMs in Render's free 512MB/0.1vCPU
+  instance, tuned to small heaps in `deploy/core/entrypoint.sh`. This was
+  sized by estimate, not measured against a real Render instance — if a
+  service inside it gets OOM-killed in practice, the fix is Render's cheapest
+  paid tier (more RAM), not smaller heaps than what's already there.
+- **File uploads are ephemeral.** `platform-service` writes to local disk;
+  Render's free tier has no persistent disk, so uploads are lost on every
+  restart/redeploy. Would need real object storage (e.g. S3) before this saw
+  real usage.
+- **search-service's fallback is in-memory filtering, not a real search
+  index.** Fine at demo scale (see `TourSearchService`'s Javadoc).

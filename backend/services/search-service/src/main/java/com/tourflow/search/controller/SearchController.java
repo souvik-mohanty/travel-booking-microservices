@@ -2,8 +2,10 @@ package com.tourflow.search.controller;
 
 import com.tourflow.search.dto.TourSearchResultResponse;
 import com.tourflow.search.service.TourSearchService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,7 @@ public class SearchController {
 
     @GetMapping("/tours")
     public ResponseEntity<TourSearchResultResponse> searchTours(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -30,7 +33,7 @@ public class SearchController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                tourSearchService.search(q, destination, minPrice, maxPrice, page, size)
+                tourSearchService.search(authorization, q, destination, minPrice, maxPrice, page, size)
         );
     }
 }

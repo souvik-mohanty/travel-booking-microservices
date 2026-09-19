@@ -16,7 +16,7 @@ spring:
   datasource:
     # Insights Service (audit + analytics, merged 2026-09-06) owns its own
     # PostgreSQL schema.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=insights_service
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tour_planner}?currentSchema=insights_service&sslmode=${DB_SSLMODE:disable}&channelBinding=${DB_CHANNEL_BINDING:disable}
     username: ${DB_USERNAME:tour_user}
     password: ${DB_PASSWORD:tour_password}
     driver-class-name: org.postgresql.Driver
@@ -40,6 +40,14 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
     consumer:
       group-id: insights-service
+    # PLAINTEXT/no-auth locally; the "render" deployment sets these to
+    # SASL_SSL with Upstash-issued credentials, since it has no
+    # unauthenticated Kafka listener to connect to (see KafkaConsumerConfig).
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    sasl:
+      mechanism: ${KAFKA_SASL_MECHANISM:PLAIN}
+      jaas-config: ${KAFKA_SASL_JAAS_CONFIG:}
 
 management:
   endpoints:

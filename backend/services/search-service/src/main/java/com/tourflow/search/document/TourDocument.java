@@ -11,7 +11,11 @@ import java.util.UUID;
 // Elasticsearch document for a published tour. Populated entirely from the
 // TourPublished payload (see TourEventListener) -- search-service never
 // calls back to tour-service to fetch anything.
-@Document(indexName = "tours")
+// createIndex = false: Spring Data would create the index with explicit
+// index.number_of_shards/number_of_replicas settings, which Elastic Cloud
+// serverless rejects outright -- ToursIndexInitializer creates it instead,
+// with no settings, so the same code works on serverless and local Docker.
+@Document(indexName = "tours", createIndex = false)
 public class TourDocument {
 
     @Id
