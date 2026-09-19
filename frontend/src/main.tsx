@@ -6,6 +6,9 @@ import './index.css'
 import App from './App.tsx'
 import { queryClient } from './app/queryClient'
 import { Toaster } from '@/components/ui/sonner'
+import { warmUpBackend } from '@/lib/warmUp'
+
+warmUpBackend()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

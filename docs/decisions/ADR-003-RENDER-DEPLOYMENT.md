@@ -26,50 +26,43 @@ that matter here:
 
 ## Decision
 
-**Split by traffic criticality, not by ADR-002's domain boundaries:**
+**Ten independent free services, no bundle.** Deploy the gateway and each of the
+9 domain services as its own Render free web service. An earlier design bundled
+gateway+identity+catalog+booking+payment into one image; measuring them
+(~1.2 GB of working set for the five JVMs) showed they cannot fit the free
+plan 512 MB, and the bundle also left the 5 standalone services unreachable
+because every gateway route and inter-service URL was hardcoded to localhost.
 
-- Bundle the 5 services on the user's hot path (gateway, identity, catalog,
-  booking, payment) into **one** Docker image / Render service
-  (`tourflow-core`, `backend/deploy/core`), running all 5 JVMs internally and
-  exposing only the gateway's port externally. One cold start instead of
-  five. This is the one service worth keeping warm via external pinging,
-  since it fits the shared hour budget on its own (~730 of 750 hours/month)
-  and covers auth/browse/book/pay.
-- Deploy the other 5 (mobility, engagement, platform, insights, search) as
-  independent free Render services. Lower-traffic features; an occasional
-  cold start on these is an acceptable tradeoff, not a defect.
-- Move Postgres (Neon, **direct** endpoint -- the pooled PgBouncer endpoint
-  breaks `SET search_path`/`currentSchema` and Flyway's advisory lock) and
-  Kafka (deferred: Upstash Kafka was discontinued in 2025; see the deployment
-  README's Phase 2) to external managed services
-  reachable by every service as a normal outbound call — sidesteps the free
-  private-networking restriction entirely, since it only blocks
-  Render-to-Render inbound traffic, not calls to an external host. Redis is
-  not provisioned; no service uses it. Elasticsearch moves to Elastic Cloud
-  (serverless, API-key auth); the free trial is time-limited, so
-  `search-service` also has an opt-in `SEARCH_BACKEND=catalog` mode
-  (`CatalogFallbackTourSearchService`) that queries `tourflow-core`'s
-  `/api/tours` directly and filters in memory. Elastic Cloud serverless
-  required two code changes: the `tours` index is created explicitly with no
-  shard/replica settings (`ToursIndexInitializer`), and Spring's ES health
-  indicator is disabled in the deployed service (serverless returns 410 for
-  `_cluster/health`).
-- The gateway's HTTP client read-timeout is raised to 90s
-  (`spring.cloud.gateway.httpclient.read-timeout`) so it doesn't 504 while a
-  downstream free-tier service wakes up. The frontend's API client detects a
-  slow-in-flight request (>4s) and shows a "waking up the server" toast
-  instead of looking hung.
+- Gateway route targets and every inter-service URL are environment variables
+  (`IDENTITY_SERVICE_URL`, `CATALOG_SERVICE_URL`, ...) defaulting to localhost, so
+  local dev is unchanged. In Render they are the services public
+  `onrender.com` URLs (free services cannot receive private-network traffic).
+  The gateway rewrites Host to the target hostname, verified locally.
+- **Cold starts:** nothing is kept permanently warm (10 services always-on
+  would need ~7,300 h against the 750 h shared pool). The frontend pings every
+  service in parallel on page load so they wake together rather than in a
+  chain; the API client shows a waking-up toast after 4 s; the gateway proxy
+  read-timeout is 90 s.
+- **Postgres:** Neon, DIRECT endpoint (the pooled PgBouncer endpoint breaks
+  session state), with `SET search_path` set per connection via Hikari
+  `connection-init-sql` because Neon ignores the `currentSchema` JDBC parameter.
+- **Kafka:** deferred (Upstash Kafka was discontinued in 2025). Producers give
+  up after 3 s so a missing broker does not stall requests.
+- **Search:** Elasticsearch on Elastic Cloud once Kafka exists; until then
+  `SEARCH_BACKEND=catalog` filters catalog-service tour list in memory.
+  Serverless required creating the index explicitly with no shard/replica
+  settings (`ToursIndexInitializer`) and disabling the ES health indicator (410).
+- Redis is not provisioned; no service uses it.
 
 ## Consequences
 
-- This deployment topology (1 bundled + 5 standalone) is **specific to the
-  free-tier deployment** and doesn't change local dev, which still runs all
-  10 services independently against local Postgres/Kafka/Elasticsearch (see
-  `backend/docker-compose.yml`) exactly as ADR-002 left it.
-- `tourflow-core`'s RAM budget (512MB/0.1vCPU shared across 5 JVMs) is
-  genuinely tight and was sized by estimate, not measured against a real
-  Render instance; see `backend/deploy/README.md`'s known-limitations section.
-- Elasticsearch-backed search is not available in this deployment. Restoring
-  it would mean either a paid ES host or moving `tourflow-core` to a paid
-  Render tier that can accept inbound private-network traffic from a
-  standalone Elasticsearch-hosting service.
+- This topology is specific to the free-tier deployment; local dev is
+  unchanged and still runs all 10 services against local Postgres/Kafka/
+  Elasticsearch (see `backend/docker-compose.yml`), as ADR-002 left it.
+- Every service-to-service call is a public HTTPS hop that can hit a sleeping
+  service. Parallel warm-up bounds the damage but a fully cold system still
+  takes 1-2 minutes to wake once.
+- The 750 h pool is shared: watch usage, and do not keep more than a couple of
+  services pinged.
+- Kafka-driven features (search index, notifications, analytics events) are
+  inert until a Kafka provider is chosen (backend/deploy/README.md, section 8).

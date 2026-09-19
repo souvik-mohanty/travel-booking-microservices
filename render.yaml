@@ -1,27 +1,23 @@
-# Render Blueprint for TourFlow's backend. Deploys as 6 free web services:
-# - tourflow-core: gateway + identity + catalog + booking + payment, bundled
-#   into one deployable (see backend/deploy/core) so there's exactly one
-#   cold start instead of 5 chained ones. Keep this one warm during the hours
-#   you need it (see backend/deploy/README.md section 7).
-# - tourflow-mobility, tourflow-engagement, tourflow-platform,
-#   tourflow-insights, tourflow-search: lower-traffic services, deployed
-#   standalone and left to free-tier-sleep independently.
+# Render Blueprint for TourFlow backend: 10 free web services -- the API gateway
+# plus the 9 domain services, each its own service (measured: the 5 JVMs of
+# gateway+identity+catalog+booking+payment need ~1 GB together, far over the
+# free plan 512 MB, so they cannot share one instance).
 #
-# Postgres is NOT deployed here -- free Render services can't accept inbound
-# private-network connections, so the standalone services couldn't reach a
-# data store living inside tourflow-core. Neon (Postgres) is external. Redis
-# is not used by any service today, so it isn't provisioned at all. Kafka is
-# deferred (Upstash discontinued theirs in 2025) -- see the deployment
-# README's Phase 2.
+# Free services cannot RECEIVE private-network traffic, so every service
+# reaches the others through their PUBLIC onrender.com URLs. Those URLs are
+# the *_SERVICE_URL values in the env group below: they assume each service
+# name is free on Render (URL = https://<name>.onrender.com). If Render
+# appended a suffix to any name, fix that value in the dashboard.
 #
-# SECRETS DO NOT LIVE IN THIS FILE. Render ignores `sync: false` (and
-# `generateValue`) inside env groups, so the group below only holds
-# non-secret constants. After applying the Blueprint, open Env Groups ->
-# tourflow-shared in the dashboard and add by hand: DB_HOST, DB_NAME,
-# DB_USERNAME, DB_PASSWORD, JWT_SECRET, CORS_ALLOWED_ORIGINS (Render keeps
-# variables added in the dashboard even though they're not listed here).
-# Service-level `sync: false` values below are prompted for during the
-# Blueprint's initial creation flow.
+# Postgres is external (Neon, DIRECT endpoint). Redis is not used by any
+# service. Kafka is deferred (see backend/deploy/README.md, Phase 2).
+#
+# SECRETS DO NOT LIVE IN THIS FILE. Render ignores sync: false (and
+# generateValue) inside env groups, so the group only holds constants and
+# URLs. After applying, open Env Groups -> tourflow-shared and add by hand:
+# DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD, JWT_SECRET,
+# CORS_ALLOWED_ORIGINS. Service-level sync: false values (Razorpay, on
+# tourflow-payment) are prompted for during the Blueprint creation flow.
 
 envVarGroups:
   - name: tourflow-shared
@@ -32,22 +28,94 @@ envVarGroups:
         value: require
       - key: DB_CHANNEL_BINDING
         value: require
-      # The direct Neon endpoint has a real connection cap; 9 JVMs x Hikari's
+      # The direct Neon endpoint has a real connection cap; 9 JVMs x Hikari
       # default pool of 10 would blow through it.
       - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
         value: "3"
       - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
         value: "0"
+      # Public URLs of the other services (gateway routes + inter-service calls).
+      - key: IDENTITY_SERVICE_URL
+        value: https://tourflow-identity.onrender.com
+      - key: CATALOG_SERVICE_URL
+        value: https://tourflow-catalog.onrender.com
+      - key: BOOKING_SERVICE_URL
+        value: https://tourflow-booking.onrender.com
+      - key: PAYMENT_SERVICE_URL
+        value: https://tourflow-payment.onrender.com
+      - key: MOBILITY_SERVICE_URL
+        value: https://tourflow-mobility.onrender.com
+      - key: ENGAGEMENT_SERVICE_URL
+        value: https://tourflow-engagement.onrender.com
+      - key: PLATFORM_SERVICE_URL
+        value: https://tourflow-platform.onrender.com
+      - key: INSIGHTS_SERVICE_URL
+        value: https://tourflow-insights.onrender.com
+      - key: SEARCH_SERVICE_URL
+        value: https://tourflow-search.onrender.com
+      # engagement-service and mobility-service read the catalog under these names.
+      - key: BUSINESS_SERVICE_URL
+        value: https://tourflow-catalog.onrender.com
+      - key: TOUR_SERVICE_URL
+        value: https://tourflow-catalog.onrender.com
 
 services:
   - type: web
-    name: tourflow-core
+    name: tourflow-gateway
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
-    dockerfilePath: deploy/core/Dockerfile
+    dockerfilePath: deploy/gateway/Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: tourflow-shared
+
+  - type: web
+    name: tourflow-identity
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/identity-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: tourflow-shared
+
+  - type: web
+    name: tourflow-catalog
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/catalog-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: tourflow-shared
+
+  - type: web
+    name: tourflow-booking
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/booking-service/Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: tourflow-shared
+
+  - type: web
+    name: tourflow-payment
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerContext: .
+    dockerfilePath: deploy/payment-service/Dockerfile
     healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
@@ -119,18 +187,13 @@ services:
       - fromGroup: tourflow-shared
       # Phase 1 (no Kafka yet): the Elasticsearch index is only filled from
       # Kafka tour.events, so search would return nothing -- "catalog" filters
-      # catalog-service's tour list in memory instead. In Phase 2, change to
+      # catalog-service tour list in memory instead. In Phase 2, change to
       # "elasticsearch" and add ELASTICSEARCH_URIS + SPRING_ELASTICSEARCH_APIKEY
       # by hand in the dashboard.
       - key: SEARCH_BACKEND
         value: catalog
-      # Elastic Cloud serverless doesn't support the _cluster/health call
-      # Spring's Elasticsearch health indicator makes (HTTP 410), and in
-      # catalog mode there's no Elasticsearch at all -- either way the
-      # indicator would leave /actuator/health permanently DOWN and Render
-      # restart-looping this service.
+      # Neither mode has a reachable Elasticsearch health endpoint (catalog mode:
+      # none at all; Elastic Cloud serverless: HTTP 410), which would leave
+      # /actuator/health DOWN and Render restart-looping this service.
       - key: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
         value: "false"
-      # tourflow-core's public URL, e.g. https://tourflow-core.onrender.com
-      - key: CATALOG_SERVICE_URL
-        sync: false

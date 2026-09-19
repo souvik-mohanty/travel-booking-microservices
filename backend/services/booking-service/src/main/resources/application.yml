@@ -78,6 +78,12 @@ management:
       # Show database and other component health details.
       show-details: always
 
+# catalog-service (tours) -- locally direct, in the Render deployment its own
+# public URL (free Render services cannot receive private-network traffic).
+services:
+  catalog:
+    base-url: ${CATALOG_SERVICE_URL:http://localhost:8082}
+
 # Must match the JWT secret used by identity-service, or JwtService here won't
 # be able to verify tokens it issued.
 jwt:

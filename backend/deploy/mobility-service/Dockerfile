@@ -1,6 +1,5 @@
-# Standalone deployable -- this service is NOT in the always-warm "core"
-# bundle (see deploy/core/Dockerfile), so it free-tier-sleeps independently
-# and cold-starts on its own when hit. Build context must be the "backend"
+# Standalone deployable: one free Render service (tourflow-mobility), which
+# sleeps after 15 min idle and cold-starts on its next request. Build context must be the "backend"
 # directory; Dockerfile Path on Render is "deploy/mobility-service/Dockerfile".
 
 FROM maven:3.9-eclipse-temurin-21 AS build

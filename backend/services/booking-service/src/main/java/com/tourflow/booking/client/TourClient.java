@@ -1,6 +1,7 @@
 package com.tourflow.booking.client;
 
 import com.tourflow.booking.dto.TourResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -11,9 +12,9 @@ public class TourClient {
 
     private final RestClient restClient;
 
-    public TourClient() {
+    public TourClient(@Value("${services.catalog.base-url:http://localhost:8082}") String catalogBaseUrl) {
         this.restClient = RestClient.builder()
-                .baseUrl("http://localhost:8082")
+                .baseUrl(catalogBaseUrl)
                 .build();
     }
 
