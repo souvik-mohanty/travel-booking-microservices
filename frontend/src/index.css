@@ -1,7 +1,15 @@
 @import 'tailwindcss';
 
+/* Tailwind's dark: utilities follow the OS "prefers-color-scheme" by default,
+   but the shadcn colour tokens below only switch on a .dark class -- and
+   nothing in the app ever sets one. On a dark-mode device that left the page
+   half-dark (dark: backgrounds) with light-theme text (e.g. the nav "Sign in"
+   button was slate-900 on a slate-900 header, invisible). Tie dark: to the
+   class so the two always agree; add a toggle that sets .dark to enable it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
