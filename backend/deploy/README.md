@@ -72,31 +72,35 @@ service directly (two services have no CORS config at all).
 1. Render dashboard → **New → Blueprint** → connect the GitHub repo → branch
    `main` → it detects the root `render.yaml` and lists 6 services + the
    `tourflow-shared` env group.
-2. Fill in the prompted (`sync: false`) values:
+2. Fill in the prompted (`sync: false`) values, service-level only:
 
-**Env group `tourflow-shared`** (applied to all 6 services)
+| Service | Prompted keys |
+|---|---|
+| tourflow-core | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (any long random string for now; must match the Razorpay webhook in §6) |
+| tourflow-search | `CATALOG_SERVICE_URL` = tourflow-core's public URL (`https://tourflow-core.onrender.com` if that name was free; otherwise a placeholder now and the real URL after §5) |
+| others | none |
+
+   Never set `PORT` — Render injects it.
+3. **Immediately after applying, add the secrets to the shared env group.**
+   Render ignores `sync: false` and `generateValue` inside env groups, so
+   `render.yaml` can only hold the constants (`DB_PORT`, `DB_SSLMODE`,
+   `DB_CHANNEL_BINDING`, Hikari caps). Dashboard → **Env Groups →
+   tourflow-shared → Edit** → add:
 
 | Key | Value |
 |---|---|
-| `DB_HOST` | Neon **direct** host |
+| `DB_HOST` | Neon **direct** host (no `-pooler`) |
 | `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | from Neon |
+| `JWT_SECRET` | one random value shared by all 6 services: `node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"` |
 | `CORS_ALLOWED_ORIGINS` | placeholder now (`https://placeholder.vercel.app`); real Vercel URL in §6 |
-| `JWT_SECRET` | auto-generated — leave alone (must be identical across services; the group guarantees it) |
-| already set | `DB_PORT`, `DB_SSLMODE`, `DB_CHANNEL_BINDING`, Hikari caps |
 
-**Per-service extras**
-
-| Service | Keys |
-|---|---|
-| tourflow-core | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (any long random string for now; must match the Razorpay webhook in §6), `OAUTH2_REDIRECT_URI` (leave blank — Google login isn't wired through the gateway, see §10), `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` (blank) |
-| tourflow-search | `ELASTICSEARCH_URIS`, `SPRING_ELASTICSEARCH_APIKEY` (Elastic values, unused until Phase 2), `CATALOG_SERVICE_URL` = tourflow-core's public URL — **fill after core's URL exists**, then redeploy search |
-| others | nothing extra |
-
-Never set `PORT` — Render injects it.
-
-3. Apply. Build order/time: the first `tourflow-core` build runs 5 Maven builds
-   in one Docker build (expect ~10–15 min); the standalone ones are faster.
-4. **Decision gate — watch tourflow-core's first boot** (Logs + Metrics):
+   Render keeps variables added in the dashboard even though they aren't in
+   the file. The first builds take 5–15 min, so add these before the first
+   boot to avoid crash-loops on missing DB settings (saving a group change
+   restarts every linked service).
+4. Build order/time: the first `tourflow-core` build runs 5 Maven builds in
+   one Docker build (expect ~10–15 min); the standalone ones are faster.
+5. **Decision gate — watch tourflow-core's first boot** (Logs + Metrics):
    - all 4 sub-services log `[core] … is healthy` and the gateway starts;
    - Render marks the deploy live (the gateway binds its port *last*, after the
      other 4 services are healthy — on 0.1 vCPU that can take several minutes);
