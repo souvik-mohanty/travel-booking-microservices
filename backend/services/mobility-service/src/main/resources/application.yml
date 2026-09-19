@@ -12,6 +12,11 @@ spring:
     username: ${DB_USERNAME:tour_user}
     password: ${DB_PASSWORD:tour_password}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      # Neon ignores the currentSchema URL parameter (Hibernate then looks in
+      # "public" while Flyway created the tables in mobility_service), so set the
+      # search_path explicitly on every new connection.
+      connection-init-sql: SET search_path TO mobility_service
 
   flyway:
     enabled: true

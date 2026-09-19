@@ -192,6 +192,8 @@ existing tours or accept that only newly published tours get indexed).
 |---|---|
 | `lstat …/backend/deploy: no such file` | code not pushed to GitHub |
 | Service crash on boot: JDBC/`SSL`/`channel binding` | wrong DB env, or `-pooler` host |
+| `Connection to localhost:5432 refused` in a service's logs | `DB_HOST`/`DB_*` never reached the service: the keys aren't in the `tourflow-shared` group, or the service isn't linked to it (Render ignores `sync: false` inside groups, so add them by hand) |
+| `Schema validation: missing table [...]` after Flyway succeeded | Neon ignores the `currentSchema` URL parameter; each service sets `hikari.connection-init-sql: SET search_path TO <schema>` to compensate — don't remove it |
 | Flyway/`relation … does not exist` or tables in `public` | used the pooled Neon host |
 | Browser CORS error | `CORS_ALLOWED_ORIGINS` doesn't exactly match the Vercel origin (scheme, no trailing slash) |
 | 502/504 right after idle | cold start — wait; check §7 |

@@ -25,7 +25,7 @@ wait_healthy() {
   name="$1"
   port="$2"
   i=0
-  while [ "$i" -lt 60 ]; do
+  while [ "$i" -lt 120 ]; do
     if curl -sf "http://localhost:${port}/actuator/health" >/dev/null 2>&1; then
       echo "[core] $name is healthy"
       return 0
@@ -33,9 +33,17 @@ wait_healthy() {
     i=$((i + 1))
     sleep 2
   done
-  echo "[core] $name did not become healthy within 120s" >&2
+  echo "[core] $name did not become healthy within 240s" >&2
   return 1
 }
+
+# Gateway first: it's tiny and has no DB, so Render sees the port open within
+# seconds instead of after all four services finish (several minutes on 0.1
+# vCPU), which otherwise looks like "no open ports detected". Requests that
+# arrive before the others are up just get a 502 from the gateway.
+echo "[core] starting gateway on port ${GATEWAY_PORT}"
+java $JVM_COMMON -Xmx90m -jar gateway.jar --server.port="${GATEWAY_PORT}" --server.tomcat.threads.max=16 &
+GATEWAY_PID=$!
 
 echo "[core] starting identity-service"
 java $JVM_COMMON -Xmx110m -jar identity-service.jar --server.port=8081 --server.tomcat.threads.max=8 &
@@ -53,5 +61,7 @@ echo "[core] starting payment-service"
 java $JVM_COMMON -Xmx90m -jar payment-service.jar --server.port=8084 --server.tomcat.threads.max=8 &
 wait_healthy payment-service 8084
 
-echo "[core] starting gateway on port ${GATEWAY_PORT} (foreground)"
-exec java $JVM_COMMON -Xmx90m -jar gateway.jar --server.port="${GATEWAY_PORT}" --server.tomcat.threads.max=16
+# Keep the container's lifetime tied to the gateway: if it dies, exit so
+# Render restarts everything.
+echo "[core] all services healthy; waiting on gateway"
+wait "$GATEWAY_PID"
