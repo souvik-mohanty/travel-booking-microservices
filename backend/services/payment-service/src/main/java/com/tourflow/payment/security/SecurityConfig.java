@@ -1,5 +1,6 @@
 package com.tourflow.payment.security;
 
+import org.springframework.http.HttpMethod;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/payments/webhook").permitAll()
 
                         // Payment APIs require authentication.
+                        // Only tourists pay for bookings (creating the Razorpay order
+                        // and verifying the payment). The webhook above stays open --
+                        // Razorpay calls it, authenticated by its own signature.
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/payments",
+                                "/api/payments/*/verify"
+                        ).hasRole("TOURIST")
+
                         .requestMatchers(
                                 "/api/payments/**"
                         ).authenticated()

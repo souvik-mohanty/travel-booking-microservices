@@ -24,7 +24,7 @@ const ROLE_COPY: Record<SelfRegisterableRole, { cta: string; blurb: string; home
   BUSINESS: {
     cta: 'Create business account',
     blurb: "You'll be able to create, publish, and manage your own tours.",
-    home: '/business',
+    home: '/my-tours',
   },
 }
 

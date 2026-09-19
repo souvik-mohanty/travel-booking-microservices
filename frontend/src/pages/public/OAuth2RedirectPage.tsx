@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoadingOverlay } from '@/components/common/LoadingOverlay'
+import { homePathForRole } from '@/lib/roles'
 import { useAuthStore } from '@/store/authStore'
 
 // Landing point for app.oauth2.authorized-redirect-uri in identity-service.
@@ -54,8 +55,8 @@ export function OAuth2RedirectPage() {
       return
     }
 
-    setSession({ accessToken, refreshToken })
-    navigate('/tours', { replace: true })
+    const user = setSession({ accessToken, refreshToken })
+    navigate(homePathForRole(user?.role), { replace: true })
   }, [setSession, navigate, searchParams])
 
   if (failure) {

@@ -87,6 +87,11 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
 
                         // All other booking APIs require authentication.
+                        // Only tourists book tours: a business or admin token is
+                        // rejected here, not just hidden in the UI.
+                        .requestMatchers(HttpMethod.POST, "/api/bookings")
+                        .hasRole("TOURIST")
+
                         .requestMatchers("/api/bookings/**").authenticated()
 
                         // Reject everything else by default.

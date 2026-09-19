@@ -11,6 +11,7 @@ import { AuthLayout, FormError } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { homePathForRole } from '@/lib/roles'
 import { useAuthStore } from '@/store/authStore'
 
 const loginSchema = z.object({
@@ -41,7 +42,7 @@ export function LoginPage() {
     try {
       const auth = await login(values)
       const user = setSession(auth)
-      navigate(from ?? (user?.role === 'ADMIN' ? '/admin/users' : '/tours'), { replace: true })
+      navigate(from ?? homePathForRole(user?.role), { replace: true })
     } catch (err) {
       setError(
         isAxiosError(err) && err.response?.status === 401

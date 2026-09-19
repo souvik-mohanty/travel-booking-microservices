@@ -41,7 +41,8 @@ export function TourDetailPage() {
   }
 
   const isOwner = user?.userId === tour.createdBy
-  const canBook = !isOwner && tour.status === 'PUBLISHED'
+  // Booking is for tourists only (booking-service enforces it too).
+  const canBook = user?.role === 'TOURIST' && !isOwner && tour.status === 'PUBLISHED'
   const total = tour.price * participants
 
   async function handleBook() {

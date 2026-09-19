@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { logout as logoutApi } from '@/features/auth/api'
 import { useAuthStore } from '@/store/authStore'
+import { homePathForRole } from '@/lib/roles'
 import type { UserRole } from '@/types/auth'
 
 const TOURIST_NAV_ITEMS = [
@@ -10,18 +11,18 @@ const TOURIST_NAV_ITEMS = [
   { to: '/bookings', label: 'My Bookings' },
 ]
 
+// Only pages that exist: My Business / My Hotels and the admin management
+// tables (users, businesses, hotels) are not built yet -- add their links back
+// together with their routes in App.tsx.
 const BUSINESS_NAV_ITEMS = [
-  { to: '/tours', label: 'Explore Tours' },
   { to: '/my-tours', label: 'My Tours' },
-  { to: '/business', label: 'My Business' },
-  { to: '/hotels', label: 'My Hotels' },
+  { to: '/tours/new', label: 'Create Tour' },
+  { to: '/tours', label: 'Explore Tours' },
 ]
 
 const ADMIN_NAV_ITEMS = [
-  { to: '/admin/users', label: 'Users' },
-  { to: '/admin/businesses', label: 'Businesses' },
-  { to: '/admin/hotels', label: 'Hotels' },
-  { to: '/admin/analytics', label: 'Analytics' },
+  { to: '/admin', label: 'Dashboard' },
+  { to: '/tours', label: 'Explore Tours' },
 ]
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -43,7 +44,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const navItems = NAV_ITEMS_BY_ROLE[user?.role ?? 'TOURIST']
-  const homeLink = user?.role === 'ADMIN' ? '/admin/users' : '/tours'
+  const homeLink = homePathForRole(user?.role)
 
   async function handleLogout() {
     if (tokens?.refreshToken) {

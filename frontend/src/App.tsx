@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/app/router/ProtectedRoute'
 import { RequireRole } from '@/app/router/RequireRole'
+import { homePathForRole } from '@/lib/roles'
 import { useAuthStore } from '@/store/authStore'
 
 import { HomePage } from '@/pages/public/HomePage'
@@ -28,13 +30,30 @@ import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 
 // NOTE: My Business / My Hotels (business portal) and the admin
 // customer/business/hotel management tables are not yet ported to this
-// architecture -- see plan Phase 5/7. Only the admin analytics dashboard is
-// wired up for /admin today.
+// architecture -- see plan Phase 5/7. Business accounts land on My Tours and
+// admins on the analytics dashboard until those pages exist.
 function HomeRedirect() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const user = useAuthStore((state) => state.user)
   if (!isAuthenticated) return <HomePage />
-  return <Navigate to={user?.role === 'ADMIN' ? '/admin' : '/tours'} replace />
+  return <Navigate to={homePathForRole(user?.role)} replace />
+}
+
+// Old links and bookmarks (/business, /hotels, /admin/...) that have no page
+// yet: send a signed-in user to their own home instead of a 404.
+function RoleHomeRedirect() {
+  const user = useAuthStore((state) => state.user)
+  return <Navigate to={homePathForRole(user?.role)} replace />
+}
+
+// Booking, paying and the tourist dashboard are for tourists only -- the
+// booking/payment services enforce the same rule server-side.
+function TouristOnly({ children }: { children: ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <RequireRole roles={['TOURIST']}>{children}</RequireRole>
+    </ProtectedRoute>
+  )
 }
 
 function App() {
@@ -53,9 +72,9 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <TouristOnly>
             <DashboardPage />
-          </ProtectedRoute>
+          </TouristOnly>
         }
       />
       <Route
@@ -85,33 +104,33 @@ function App() {
       <Route
         path="/bookings"
         element={
-          <ProtectedRoute>
+          <TouristOnly>
             <MyBookingsPage />
-          </ProtectedRoute>
+          </TouristOnly>
         }
       />
       <Route
         path="/bookings/:id"
         element={
-          <ProtectedRoute>
+          <TouristOnly>
             <BookingDetailPage />
-          </ProtectedRoute>
+          </TouristOnly>
         }
       />
       <Route
         path="/bookings/:id/pay"
         element={
-          <ProtectedRoute>
+          <TouristOnly>
             <BookingPaymentPage />
-          </ProtectedRoute>
+          </TouristOnly>
         }
       />
       <Route
         path="/bookings/:id/confirmation"
         element={
-          <ProtectedRoute>
+          <TouristOnly>
             <BookingConfirmationPage />
-          </ProtectedRoute>
+          </TouristOnly>
         }
       />
 
@@ -120,7 +139,7 @@ function App() {
         path="/tours/new"
         element={
           <ProtectedRoute>
-            <RequireRole role="BUSINESS">
+            <RequireRole roles={['BUSINESS']}>
               <CreateTourPage />
             </RequireRole>
           </ProtectedRoute>
@@ -130,7 +149,7 @@ function App() {
         path="/my-tours"
         element={
           <ProtectedRoute>
-            <RequireRole role="BUSINESS">
+            <RequireRole roles={['BUSINESS']}>
               <MyToursPage />
             </RequireRole>
           </ProtectedRoute>
@@ -142,9 +161,35 @@ function App() {
         path="/admin"
         element={
           <ProtectedRoute>
-            <RequireRole role="ADMIN">
+            <RequireRole roles={['ADMIN']}>
               <AdminDashboardPage />
             </RequireRole>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Pages that don't exist yet (see NOTE above) */}
+      <Route
+        path="/business"
+        element={
+          <ProtectedRoute>
+            <RoleHomeRedirect />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/hotels"
+        element={
+          <ProtectedRoute>
+            <RoleHomeRedirect />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute>
+            <RoleHomeRedirect />
           </ProtectedRoute>
         }
       />
