@@ -34,7 +34,7 @@ COPY --from=build /build/gateway/api-gateway/target/api-gateway-0.0.1-SNAPSHOT.j
 COPY deploy/core/entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 
-# Every hot-path service needs DB_*/KAFKA_* env vars pointing at Neon/Upstash --
+# Every hot-path service needs DB_*/KAFKA_* env vars pointing at Neon/managed Kafka --
 # set these in Render's dashboard, not here (see the README in this directory).
 
 EXPOSE 8080

@@ -8,7 +8,7 @@ spring:
     # resolvable by other containers on tourflow-network.
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
     # PLAINTEXT/no-auth locally; the "render" deployment sets these to
-    # SASL_SSL with Upstash-issued credentials, since it has no
+    # SASL_SSL with managed-Kafka credentials (Aiven, Redpanda, ...), since it has no
     # unauthenticated Kafka listener to connect to (see KafkaProducerConfig).
     security:
       protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}

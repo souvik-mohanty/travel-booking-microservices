@@ -40,7 +40,7 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         // Blank/PLAINTEXT locally (see docker-compose.yml); set to SASL_SSL with
-        // Upstash-issued credentials in the "render" deployment, which has no
+        // managed-Kafka credentials (Aiven, Redpanda, ...) in the "render" deployment, which has no
         // unauthenticated Kafka listener to connect to.
         config.put("security.protocol", securityProtocol);
         if (!saslJaasConfig.isBlank()) {

@@ -30,8 +30,12 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         // Blank/PLAINTEXT locally (see docker-compose.yml); set to SASL_SSL with
-        // Upstash-issued credentials in the "render" deployment, which has no
+        // managed-Kafka credentials (Aiven, Redpanda, ...) in the "render" deployment, which has no
         // unauthenticated Kafka listener to connect to.
+        // Default is 60s: with Kafka unreachable, every publish would stall the
+        // HTTP request that triggered it that long before failing (the failure
+        // itself is swallowed, see TourEventPublisher).
+        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
         config.put("security.protocol", securityProtocol);
         if (!saslJaasConfig.isBlank()) {
             config.put("sasl.mechanism", saslMechanism);

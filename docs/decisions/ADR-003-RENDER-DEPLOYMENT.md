@@ -38,7 +38,10 @@ that matter here:
 - Deploy the other 5 (mobility, engagement, platform, insights, search) as
   independent free Render services. Lower-traffic features; an occasional
   cold start on these is an acceptable tradeoff, not a defect.
-- Move Postgres and Kafka to external managed free tiers (Neon, Upstash)
+- Move Postgres (Neon, **direct** endpoint -- the pooled PgBouncer endpoint
+  breaks `SET search_path`/`currentSchema` and Flyway's advisory lock) and
+  Kafka (deferred: Upstash Kafka was discontinued in 2025; see the deployment
+  README's Phase 2) to external managed services
   reachable by every service as a normal outbound call — sidesteps the free
   private-networking restriction entirely, since it only blocks
   Render-to-Render inbound traffic, not calls to an external host. Redis is

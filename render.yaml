@@ -12,13 +12,24 @@
 # accept inbound private-network connections (see the deployment README),
 # so the 5 standalone services couldn't reach data stores living inside
 # tourflow-core. Use external managed free tiers instead (Neon for Postgres,
-# Upstash for Kafka) and fill in tourflow-shared's env vars in the Render
+# Elastic Cloud for search) and fill in tourflow-shared's env vars in the Render
 # dashboard after first deploy. Redis is not used by any service today, so
 # it's intentionally not provisioned at all.
+#
+# Kafka is deliberately absent from this blueprint: no free managed Kafka is
+# a drop-in fit (Upstash discontinued theirs in 2025) -- see the deployment
+# README's "Phase 2" for options. Until KAFKA_BOOTSTRAP_SERVERS (and, for
+# SASL, KAFKA_SECURITY_PROTOCOL/KAFKA_SASL_*) are added by hand in the
+# dashboard, event publishing fails fast and quietly, and consumers just log
+# connection warnings.
 
 envVarGroups:
   - name: tourflow-shared
     envVars:
+      # MUST be Neon's DIRECT host (no "-pooler" in the name): the pooled
+      # endpoint is PgBouncer in transaction mode, which breaks the
+      # `SET search_path` behind our per-service currentSchema and Flyway's
+      # session advisory lock.
       - key: DB_HOST
         sync: false
       - key: DB_PORT
@@ -33,14 +44,12 @@ envVarGroups:
         value: require
       - key: DB_CHANNEL_BINDING
         value: require
-      - key: KAFKA_BOOTSTRAP_SERVERS
-        sync: false
-      - key: KAFKA_SECURITY_PROTOCOL
-        value: SASL_SSL
-      - key: KAFKA_SASL_MECHANISM
-        sync: false
-      - key: KAFKA_SASL_JAAS_CONFIG
-        sync: false
+      # The direct endpoint has a real connection cap; 9 JVMs x Hikari's
+      # default pool of 10 would blow through it.
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: "0"
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ALLOWED_ORIGINS
@@ -143,8 +152,12 @@ services:
       # this service.
       - key: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
         value: "false"
-      # Optional escape hatch: "catalog" skips Elasticsearch entirely and
-      # filters catalog-service's tour list in memory instead. Leave at the
-      # default while Elasticsearch is available.
+      # Phase 1 (no Kafka yet): the Elasticsearch index is only filled from
+      # Kafka tour.events, so search would return nothing -- "catalog" filters
+      # catalog-service's tour list in memory instead. Once Kafka works
+      # (Phase 2), change this to "elasticsearch".
       - key: SEARCH_BACKEND
-        value: elasticsearch
+        value: catalog
+      # tourflow-core's public URL (only read when SEARCH_BACKEND=catalog).
+      - key: CATALOG_SERVICE_URL
+        sync: false
