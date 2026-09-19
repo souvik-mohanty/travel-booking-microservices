@@ -193,8 +193,14 @@ Deployments → Promote a previous one.
 
 ## 10. Known limitations
 
-- **Google login is not wired through the gateway** (no `/oauth2/**` or
-  `/login/oauth2/**` routes, no forwarded-header config). Email/password works.
+- **Google login needs a few extra settings on `souvik-tourflow-identity`**
+  (it is off by default): `SPRING_PROFILES_ACTIVE=oauth2`, `GOOGLE_CLIENT_ID`,
+  `GOOGLE_CLIENT_SECRET`, `OAUTH2_CALLBACK_BASE_URL` (the gateway's public URL)
+  and `OAUTH2_REDIRECT_URI` (`https://<vercel-app>/oauth2/redirect`). The OAuth
+  client in Google Cloud must list `<gateway URL>/login/oauth2/code/google` as an
+  Authorized redirect URI (and, while the consent screen is in "Testing", the
+  Google accounts allowed to sign in). The handshake runs entirely through the
+  gateway (start and callback), so its session cookie stays on one host.
 - **File uploads are ephemeral** (platform-service writes to local disk).
 - **Every hop is a public HTTPS call** between services; each can cold-start.
   Parallel warm-up mitigates the chain but a fully cold system is slow once.

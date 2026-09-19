@@ -45,6 +45,15 @@ spring:
               uri: ${IDENTITY_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/api/users/**
+            # Google OAuth2 handshake. The browser starts the login and comes
+            # back from Google through the gateway, so the session cookie
+            # identity-service sets for the handshake is scoped to the gateway's
+            # host on both legs (see OAUTH2_CALLBACK_BASE_URL in
+            # application-oauth2.yml).
+            - id: identity-service-oauth2
+              uri: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/oauth2/**,/login/oauth2/**
 
             # catalog-service: tour + business + hotel + guide, merged.
             - id: catalog-service-tours

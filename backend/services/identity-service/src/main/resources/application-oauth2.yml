@@ -12,6 +12,15 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+            # Where Google sends the browser back. The default ({baseUrl}) would
+            # resolve to identity-service's OWN host, but the browser starts the
+            # login at the api-gateway, so the handshake's session cookie
+            # belongs to the gateway's host: the callback must return there too.
+            # Locally that's the gateway on 8080; in production set
+            # OAUTH2_CALLBACK_BASE_URL to the gateway's public URL. This exact
+            # URL (base + /login/oauth2/code/google) must be listed under
+            # "Authorized redirect URIs" for the OAuth client in Google Cloud.
+            redirect-uri: ${OAUTH2_CALLBACK_BASE_URL:http://localhost:8080}/login/oauth2/code/{registrationId}
             scope:
               - openid
               - email
