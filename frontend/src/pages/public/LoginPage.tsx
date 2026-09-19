@@ -4,7 +4,9 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
-import { login, startGoogleLogin } from '@/features/auth/api'
+import { login } from '@/features/auth/api'
+import { useGoogleLogin } from '@/features/auth/useGoogleLogin'
+import { LoadingOverlay } from '@/components/common/LoadingOverlay'
 import { AuthLayout, FormError } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -24,6 +26,7 @@ export function LoginPage() {
   const location = useLocation()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const google = useGoogleLogin()
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -52,6 +55,11 @@ export function LoginPage() {
 
   return (
     <AuthLayout title="Sign in to TourFlow">
+      <LoadingOverlay
+        open={submitting || google.redirecting}
+        title={google.redirecting ? 'Redirecting to Google…' : 'Signing you in…'}
+        message={google.redirecting ? 'Taking you to Google to finish signing in.' : 'Checking your details.'}
+      />
       <FormError message={error} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -100,7 +108,8 @@ export function LoginPage() {
       <Button
         type="button"
         variant="outline"
-        onClick={startGoogleLogin}
+        onClick={google.start}
+        disabled={submitting || google.redirecting}
         className="w-full transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
       >
         Continue with Google

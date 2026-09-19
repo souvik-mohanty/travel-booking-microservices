@@ -4,7 +4,9 @@ import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
-import { register as registerApi, startGoogleLogin } from '@/features/auth/api'
+import { register as registerApi } from '@/features/auth/api'
+import { useGoogleLogin } from '@/features/auth/useGoogleLogin'
+import { LoadingOverlay } from '@/components/common/LoadingOverlay'
 import { AuthLayout, FormError } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -41,6 +43,7 @@ export function RegisterPage() {
   const [role, setRole] = useState<SelfRegisterableRole>('TOURIST')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const google = useGoogleLogin()
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -69,6 +72,11 @@ export function RegisterPage() {
 
   return (
     <AuthLayout title="Create your TourFlow account">
+      <LoadingOverlay
+        open={submitting || google.redirecting}
+        title={google.redirecting ? 'Redirecting to Google…' : 'Creating your account…'}
+        message={google.redirecting ? 'Taking you to Google to finish signing in.' : 'Setting things up for you.'}
+      />
       <div className="mb-5 grid grid-cols-2 gap-2 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
         {(['TOURIST', 'BUSINESS'] as const).map((option) => (
           <button
@@ -163,7 +171,8 @@ export function RegisterPage() {
           <Button
             type="button"
             variant="outline"
-            onClick={startGoogleLogin}
+            onClick={google.start}
+            disabled={submitting || google.redirecting}
             className="w-full transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
           >
             Continue with Google
