@@ -12,12 +12,17 @@
 # Postgres is external (Neon, DIRECT endpoint). Redis is not used by any
 # service. Kafka is deferred (see backend/deploy/README.md, Phase 2).
 #
+# No healthCheckPath on purpose: each image starts a tiny forwarder that binds
+# $PORT within seconds and holds requests until the app is up (see
+# backend/deploy/common/Proxy.java), because Render's port-scan window is shorter
+# than a Spring Boot cold start on the free plan's 0.1 vCPU.
+#
 # SECRETS DO NOT LIVE IN THIS FILE. Render ignores sync: false (and
 # generateValue) inside env groups, so the group only holds constants and
 # URLs. After applying, open Env Groups -> tourflow-shared and add by hand:
 # DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD, JWT_SECRET,
 # CORS_ALLOWED_ORIGINS. Service-level sync: false values (Razorpay, on
-# tourflow-payment) are prompted for during the Blueprint creation flow.
+# souvik-tourflow-payment) are prompted for during the Blueprint creation flow.
 
 envVarGroups:
   - name: tourflow-shared
@@ -36,87 +41,82 @@ envVarGroups:
         value: "0"
       # Public URLs of the other services (gateway routes + inter-service calls).
       - key: IDENTITY_SERVICE_URL
-        value: https://tourflow-identity.onrender.com
+        value: https://souvik-tourflow-identity.onrender.com
       - key: CATALOG_SERVICE_URL
-        value: https://tourflow-catalog.onrender.com
+        value: https://souvik-tourflow-catalog.onrender.com
       - key: BOOKING_SERVICE_URL
-        value: https://tourflow-booking.onrender.com
+        value: https://souvik-tourflow-booking.onrender.com
       - key: PAYMENT_SERVICE_URL
-        value: https://tourflow-payment.onrender.com
+        value: https://souvik-tourflow-payment.onrender.com
       - key: MOBILITY_SERVICE_URL
-        value: https://tourflow-mobility.onrender.com
+        value: https://souvik-tourflow-mobility.onrender.com
       - key: ENGAGEMENT_SERVICE_URL
-        value: https://tourflow-engagement.onrender.com
+        value: https://souvik-tourflow-engagement.onrender.com
       - key: PLATFORM_SERVICE_URL
-        value: https://tourflow-platform.onrender.com
+        value: https://souvik-tourflow-platform.onrender.com
       - key: INSIGHTS_SERVICE_URL
-        value: https://tourflow-insights.onrender.com
+        value: https://souvik-tourflow-insights.onrender.com
       - key: SEARCH_SERVICE_URL
-        value: https://tourflow-search.onrender.com
+        value: https://souvik-tourflow-search.onrender.com
       # engagement-service and mobility-service read the catalog under these names.
       - key: BUSINESS_SERVICE_URL
-        value: https://tourflow-catalog.onrender.com
+        value: https://souvik-tourflow-catalog.onrender.com
       - key: TOUR_SERVICE_URL
-        value: https://tourflow-catalog.onrender.com
+        value: https://souvik-tourflow-catalog.onrender.com
 
 services:
   - type: web
-    name: tourflow-gateway
+    name: souvik-tourflow-gateway
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/gateway/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-identity
+    name: souvik-tourflow-identity
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/identity-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-catalog
+    name: souvik-tourflow-catalog
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/catalog-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-booking
+    name: souvik-tourflow-booking
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/booking-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-payment
+    name: souvik-tourflow-payment
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/payment-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
       - key: RAZORPAY_KEY_ID
@@ -127,62 +127,57 @@ services:
         sync: false
 
   - type: web
-    name: tourflow-mobility
+    name: souvik-tourflow-mobility
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/mobility-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-engagement
+    name: souvik-tourflow-engagement
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/engagement-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-platform
+    name: souvik-tourflow-platform
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/platform-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-insights
+    name: souvik-tourflow-insights
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/insights-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
 
   - type: web
-    name: tourflow-search
+    name: souvik-tourflow-search
     runtime: docker
     plan: free
     region: singapore
     rootDir: backend
     dockerContext: .
     dockerfilePath: deploy/search-service/Dockerfile
-    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: tourflow-shared
       # Phase 1 (no Kafka yet): the Elasticsearch index is only filled from

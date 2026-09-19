@@ -40,7 +40,7 @@ Consequences, all measured or confirmed rather than assumed:
 - [ ] Latest code **pushed to GitHub** (Render clones GitHub, not your disk).
 - [ ] Accounts: Render, Vercel, Neon, (Elastic Cloud later), Razorpay test keys.
 - [ ] Rotate any credential that was pasted into chats/tickets.
-- [ ] Service names in `render.yaml` are `tourflow-gateway`, `-identity`,
+- [ ] Service names in `render.yaml` are `souvik-tourflow-gateway`, `-identity`,
       `-catalog`, `-booking`, `-payment`, `-mobility`, `-engagement`,
       `-platform`, `-insights`, `-search`. Their URLs must be
       `https://<name>.onrender.com`; if Render appends a suffix to any name
@@ -71,13 +71,13 @@ Serverless project → endpoint + API key. Used only after Kafka works and you s
 default shard/replica settings (`ToursIndexInitializer` creates the index with
 none) and returns HTTP 410 for `_cluster/health` (so
 `MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED=false` is set). Env vars then:
-`ELASTICSEARCH_URIS`, `SPRING_ELASTICSEARCH_APIKEY` (on `tourflow-search`).
+`ELASTICSEARCH_URIS`, `SPRING_ELASTICSEARCH_APIKEY` (on `souvik-tourflow-search`).
 
 ## 4. Render — deploy the Blueprint
 
 1. Dashboard → **New → Blueprint** → connect the repo → branch `main`. It lists
    10 services and the `tourflow-shared` env group.
-2. Prompted values (service-level `sync: false`): only **tourflow-payment**:
+2. Prompted values (service-level `sync: false`): only **souvik-tourflow-payment**:
    `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (any long
    random string for now; must match the Razorpay webhook in §6).
 3. **Immediately add the secrets to the shared group.** Render ignores
@@ -95,16 +95,21 @@ none) and returns HTTP 410 for `_cluster/health` (so
    (`IDENTITY_SERVICE_URL`, `CATALOG_SERVICE_URL`, …, plus `BUSINESS_SERVICE_URL`
    and `TOUR_SERVICE_URL`, both = the catalog URL). Verify each matches the real
    URL Render shows on that service's page.
-4. Builds take a few minutes each. **Migrating from the old 6-service layout:**
-   delete `tourflow-core` (it can't fit in 512 MB), keep the existing
-   mobility/engagement/platform/insights/search services, then **Manual Sync**
-   the Blueprint to create `tourflow-gateway/-identity/-catalog/-booking/-payment`.
+4. Builds take a few minutes each. **Migrating from earlier layouts / removing
+   the random suffix:** a service's `onrender.com` address is fixed when it is
+   created, and Render appends a random suffix (e.g. `-bszp`) when the plain name
+   is already taken. It cannot be edited afterwards, so the fix is new service
+   names nobody else uses (the `souvik-tourflow-*` names in `render.yaml`):
+   delete the old services (`tourflow-*`, including `tourflow-core`), then
+   **Manual Sync** the Blueprint (or re-apply it) so all 10 are created fresh.
+   Check the URL shown on each new service page: it must be exactly
+   `https://<name>.onrender.com`.
 5. Check each service's Logs: `Started …Application`, and for DB services
    `Successfully applied N migrations to schema "<x>_service"`.
 
 ## 5. Verify the backend
 
-`$GW` = `https://tourflow-gateway.onrender.com`. The first request after idle can
+`$GW` = `https://souvik-tourflow-gateway.onrender.com`. The first request after idle can
 take 1–2 min per sleeping service (§7).
 
 ```bash
@@ -122,14 +127,14 @@ Then confirm in Neon's SQL editor that each service created its schema.
 1. **Add New → Project** → import the repo → **Root Directory `frontend`** →
    Vite preset (`npm run build`, output `dist`).
 2. Environment variables (inlined at build time — redeploy after changing):
-   - `VITE_API_BASE_URL` = `https://tourflow-gateway.onrender.com` (no trailing slash)
+   - `VITE_API_BASE_URL` = `https://souvik-tourflow-gateway.onrender.com` (no trailing slash)
    - `VITE_WARMUP_URLS` = comma-separated public URLs of all services, e.g.
-     `https://tourflow-gateway.onrender.com,https://tourflow-identity.onrender.com,https://tourflow-catalog.onrender.com,https://tourflow-booking.onrender.com,https://tourflow-payment.onrender.com,https://tourflow-mobility.onrender.com,https://tourflow-engagement.onrender.com,https://tourflow-platform.onrender.com,https://tourflow-insights.onrender.com,https://tourflow-search.onrender.com`
+     `https://souvik-tourflow-gateway.onrender.com,https://souvik-tourflow-identity.onrender.com,https://souvik-tourflow-catalog.onrender.com,https://souvik-tourflow-booking.onrender.com,https://souvik-tourflow-payment.onrender.com,https://souvik-tourflow-mobility.onrender.com,https://souvik-tourflow-engagement.onrender.com,https://souvik-tourflow-platform.onrender.com,https://souvik-tourflow-insights.onrender.com,https://souvik-tourflow-search.onrender.com`
 3. `frontend/vercel.json` rewrites all paths to `index.html` (deep links/refresh).
 4. **Close the CORS loop:** set the group's `CORS_ALLOWED_ORIGINS` to the Vercel
    production URL (scheme included, no trailing slash) — this restarts every
    service. Preview URLs are rejected unless added (comma-separated).
-5. **Razorpay webhook**: URL `https://tourflow-payment.onrender.com/api/payments/webhook`,
+5. **Razorpay webhook**: URL `https://souvik-tourflow-payment.onrender.com/api/payments/webhook`,
    secret = `RAZORPAY_WEBHOOK_SECRET`.
 
 ## 7. Cold starts (the honest version)
@@ -167,7 +172,7 @@ With a cluster: create topics `tour.events`, `booking.events`; add to
 `KAFKA_SASL_JAAS_CONFIG`
 (`org.apache.kafka.common.security.scram.ScramLoginModule required username="…" password="…";`).
 Consumer groups: `platform-service`, `insights-service`, `search-service`. Then on
-`tourflow-search` set `SEARCH_BACKEND=elasticsearch` and add the Elastic vars (§3).
+`souvik-tourflow-search` set `SEARCH_BACKEND=elasticsearch` and add the Elastic vars (§3).
 
 ## 9. Troubleshooting
 
@@ -181,7 +186,7 @@ Consumer groups: `platform-service`, `insights-service`, `search-service`. Then 
 | A service calls another and fails | the caller's `*_SERVICE_URL` (booking→`CATALOG_`, payment→`BOOKING_`, engagement→`BOOKING_`/`BUSINESS_`, mobility→`BOOKING_`/`TOUR_`) |
 | Browser CORS error | `CORS_ALLOWED_ORIGINS` ≠ exact Vercel origin |
 | Search returns nothing | `SEARCH_BACKEND=elasticsearch` without Kafka, or `CATALOG_SERVICE_URL` wrong |
-| Health DOWN on tourflow-search | `MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED` not `false` |
+| Health DOWN on souvik-tourflow-search | `MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED` not `false` |
 
 Rollback: Render → service → Deploys → redeploy an earlier commit; Vercel →
 Deployments → Promote a previous one.
