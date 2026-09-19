@@ -25,13 +25,16 @@ import { MyBookingsPage } from '@/pages/tourist/MyBookingsPage'
 
 import { CreateTourPage } from '@/pages/business/CreateTourPage'
 import { MyToursPage } from '@/pages/business/MyToursPage'
+import { MyBusinessPage } from '@/pages/business/MyBusinessPage'
+import { MyHotelsPage } from '@/pages/business/MyHotelsPage'
 
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
+import { AdminBusinessesPage } from '@/pages/admin/AdminBusinessesPage'
+import { AdminHotelsPage } from '@/pages/admin/AdminHotelsPage'
 
-// NOTE: My Business / My Hotels (business portal) and the admin
-// customer/business/hotel management tables are not yet ported to this
-// architecture -- see plan Phase 5/7. Business accounts land on My Tours and
-// admins on the analytics dashboard until those pages exist.
+// Business accounts land on My Tours and admins on the analytics dashboard
+// (see lib/roles.ts).
 function HomeRedirect() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const user = useAuthStore((state) => state.user)
@@ -39,8 +42,8 @@ function HomeRedirect() {
   return <Navigate to={homePathForRole(user?.role)} replace />
 }
 
-// Old links and bookmarks (/business, /hotels, /admin/...) that have no page
-// yet: send a signed-in user to their own home instead of a 404.
+// Unknown /admin/... paths: send a signed-in user to their own home instead of
+// a 404.
 function RoleHomeRedirect() {
   const user = useAuthStore((state) => state.user)
   return <Navigate to={homePathForRole(user?.role)} replace />
@@ -156,7 +159,58 @@ function App() {
         }
       />
 
+      <Route
+        path="/business"
+        element={
+          <ProtectedRoute>
+            <RequireRole roles={['BUSINESS']}>
+              <MyBusinessPage />
+            </RequireRole>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/hotels"
+        element={
+          <ProtectedRoute>
+            <RequireRole roles={['BUSINESS']}>
+              <MyHotelsPage />
+            </RequireRole>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Admin */}
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute>
+            <RequireRole roles={['ADMIN']}>
+              <AdminUsersPage />
+            </RequireRole>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/businesses"
+        element={
+          <ProtectedRoute>
+            <RequireRole roles={['ADMIN']}>
+              <AdminBusinessesPage />
+            </RequireRole>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/hotels"
+        element={
+          <ProtectedRoute>
+            <RequireRole roles={['ADMIN']}>
+              <AdminHotelsPage />
+            </RequireRole>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin"
         element={
@@ -168,23 +222,7 @@ function App() {
         }
       />
 
-      {/* Pages that don't exist yet (see NOTE above) */}
-      <Route
-        path="/business"
-        element={
-          <ProtectedRoute>
-            <RoleHomeRedirect />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/hotels"
-        element={
-          <ProtectedRoute>
-            <RoleHomeRedirect />
-          </ProtectedRoute>
-        }
-      />
+      {/* Unknown /admin/... paths: back to the user's own home */}
       <Route
         path="/admin/*"
         element={

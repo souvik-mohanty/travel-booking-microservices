@@ -44,10 +44,13 @@ export function LoginPage() {
       const user = setSession(auth)
       navigate(from ?? homePathForRole(user?.role), { replace: true })
     } catch (err) {
+      const status = isAxiosError(err) ? err.response?.status : undefined
       setError(
-        isAxiosError(err) && err.response?.status === 401
+        status === 401
           ? 'Invalid email or password.'
-          : 'Login failed. Please try again.',
+          : status === 403
+            ? 'This account has been disabled. Please contact support.'
+            : 'Login failed. Please try again.',
       )
     } finally {
       setSubmitting(false)

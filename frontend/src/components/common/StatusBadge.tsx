@@ -9,6 +9,12 @@ const STYLES: Record<string, string> = {
   CANCELLED: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
   FAILED: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
   REFUNDED: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+  ACTIVE: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+  ENABLED: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+  SUSPENDED: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+  DISABLED: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+  DELETED: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+  INACTIVE: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
 }
 
 export function StatusBadge({ status }: { status: string }) {

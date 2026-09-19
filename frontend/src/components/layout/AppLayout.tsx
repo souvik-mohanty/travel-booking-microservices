@@ -11,17 +11,19 @@ const TOURIST_NAV_ITEMS = [
   { to: '/bookings', label: 'My Bookings' },
 ]
 
-// Only pages that exist: My Business / My Hotels and the admin management
-// tables (users, businesses, hotels) are not built yet -- add their links back
-// together with their routes in App.tsx.
 const BUSINESS_NAV_ITEMS = [
   { to: '/my-tours', label: 'My Tours' },
+  { to: '/business', label: 'My Business' },
+  { to: '/hotels', label: 'My Hotels' },
   { to: '/tours/new', label: 'Create Tour' },
   { to: '/tours', label: 'Explore Tours' },
 ]
 
 const ADMIN_NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard' },
+  { to: '/admin/users', label: 'Users' },
+  { to: '/admin/businesses', label: 'Businesses' },
+  { to: '/admin/hotels', label: 'Hotels' },
   { to: '/tours', label: 'Explore Tours' },
 ]
 
