@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { logout as logoutApi } from '@/features/auth/api'
+import { Logo } from '@/components/common/Logo'
 import { useAuthStore } from '@/store/authStore'
 import { homePathForRole } from '@/lib/roles'
 import type { UserRole } from '@/types/auth'
@@ -61,16 +62,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <header className="relative border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        {/* Brand accent line -- the one place the blue->green gradient always shows, unmissable but not loud. */}
+        {/* Brand accent line -- the one place the blue->orange gradient always shows, unmissable but not loud. */}
         <div className="tf-gradient-bar absolute inset-x-0 top-0 h-0.5" />
 
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
           <div className="flex items-center gap-8">
             <NavLink
               to={homeLink}
-              className="tf-gradient-text text-lg font-bold tracking-tight transition-transform duration-200 hover:scale-[1.03]"
+              aria-label="TourFlow home"
+              className="transition-transform duration-200 hover:scale-[1.03]"
             >
-              TourFlow
+              <Logo size={40} />
             </NavLink>
             <nav className="hidden gap-5 text-sm md:flex">
               {navItems.map((item) => (
@@ -81,7 +83,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     `relative py-1 transition-colors duration-200 after:absolute after:-bottom-[1px] after:left-0 after:h-0.5 after:rounded-full after:transition-all after:duration-300 ${
                       isActive
                         ? 'font-medium text-blue-700 after:w-full after:bg-blue-600 dark:text-blue-400 dark:after:bg-blue-400'
-                        : 'text-slate-500 after:w-0 after:bg-green-500 hover:text-slate-900 hover:after:w-full dark:text-slate-400 dark:hover:text-slate-100'
+                        : 'text-slate-500 after:w-0 after:bg-orange-500 hover:text-slate-900 hover:after:w-full dark:text-slate-400 dark:hover:text-slate-100'
                     }`
                   }
                 >
@@ -95,7 +97,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             {user && (
               <span className="hidden items-center gap-2 text-sm text-slate-500 dark:text-slate-400 sm:flex">
                 {user.email}
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700 dark:bg-orange-950 dark:text-orange-300">
                   {ROLE_LABELS[user.role]}
                 </span>
               </span>

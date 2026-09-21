@@ -8,6 +8,38 @@
    class so the two always agree; add a toggle that sets .dark to enable it. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ---- TourFlow brand palette ------------------------------------------
+   Derived from the logo: blue #3C93D6 and orange #F68712 are the 500 steps
+   exactly. Redefining Tailwind's own blue-* / orange-* scales re-themes every
+   existing bg-blue-600 / text-blue-700 / bg-orange-100 utility at once.
+   Contrast on white: blue-600 4.7:1 and orange-700 5.2:1 pass for text;
+   blue-500 and orange-500 are for fills, icons and large graphics only. */
+@theme {
+  --color-blue-50: #eff6fa;
+  --color-blue-100: #dfecf6;
+  --color-blue-200: #c0dcf2;
+  --color-blue-300: #96c5e9;
+  --color-blue-400: #67abdf;
+  --color-blue-500: #3c93d6;
+  --color-blue-600: #2578b8;
+  --color-blue-700: #206397;
+  --color-blue-800: #184a71;
+  --color-blue-900: #113753;
+  --color-blue-950: #0a2031;
+
+  --color-orange-50: #fdf5ec;
+  --color-orange-100: #fbebda;
+  --color-orange-200: #fcdab5;
+  --color-orange-300: #fac184;
+  --color-orange-400: #f8a54e;
+  --color-orange-500: #f68712;
+  --color-orange-600: #d27008;
+  --color-orange-700: #a65806;
+  --color-orange-800: #7a4105;
+  --color-orange-900: #572e03;
+  --color-orange-950: #301a02;
+}
+
 :root {
   color-scheme: light;
 }
@@ -95,17 +127,18 @@ body {
   animation-delay: calc(var(--tf-delay, 0) * 60ms);
 }
 
-/* Brand gradient (blue -> green), used sparingly as an accent line/text,
-   never as a body-text color. */
+/* Brand gradient (logo blue -> logo orange), used sparingly as an accent
+   line/text, never as a body-text color. The text version uses the darker
+   600 steps so it stays readable on white. */
 .tf-gradient-text {
-  background-image: linear-gradient(90deg, #2563eb, #16a34a);
+  background-image: linear-gradient(90deg, var(--color-blue-600), var(--color-orange-600));
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
 .tf-gradient-bar {
-  background-image: linear-gradient(90deg, #2563eb, #16a34a);
+  background-image: linear-gradient(90deg, var(--color-blue-500), var(--color-orange-500));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -123,8 +156,8 @@ body {
    resolve if these --color-* custom properties exist. Structural/neutral
    tokens reuse Tailwind's own generated gray scale (var(--color-*)) so
    they match the existing hand-styled slate-based UI exactly; --primary/
-   --secondary/--ring/--chart-* map onto the blue/green brand palette
-   already used everywhere else in this app (bg-blue-600, text-green-700,
+   --secondary/--ring/--chart-* map onto the blue/orange brand palette
+   already used everywhere else in this app (bg-blue-600, bg-orange-100,
    .tf-gradient-*). This block is purely additive -- nothing above it
    changes or depends on these tokens. */
 
@@ -143,8 +176,8 @@ body {
   --primary: var(--color-blue-600);
   --primary-foreground: var(--color-white);
 
-  --secondary: var(--color-green-600);
-  --secondary-foreground: var(--color-white);
+  --secondary: var(--color-orange-500);
+  --secondary-foreground: var(--color-slate-900);
 
   --muted: var(--color-slate-100);
   --muted-foreground: var(--color-slate-500);
@@ -160,7 +193,7 @@ body {
   --ring: var(--color-blue-400);
 
   --chart-1: var(--color-blue-600);
-  --chart-2: var(--color-green-600);
+  --chart-2: var(--color-orange-500);
   --chart-3: var(--color-amber-500);
   --chart-4: var(--color-violet-500);
   --chart-5: var(--color-red-500);
@@ -179,8 +212,8 @@ body {
   --primary: var(--color-blue-500);
   --primary-foreground: var(--color-white);
 
-  --secondary: var(--color-green-600);
-  --secondary-foreground: var(--color-white);
+  --secondary: var(--color-orange-500);
+  --secondary-foreground: var(--color-slate-900);
 
   --muted: var(--color-slate-800);
   --muted-foreground: var(--color-slate-400);
@@ -196,7 +229,7 @@ body {
   --ring: var(--color-blue-500);
 
   --chart-1: var(--color-blue-400);
-  --chart-2: var(--color-green-400);
+  --chart-2: var(--color-orange-400);
   --chart-3: var(--color-amber-400);
   --chart-4: var(--color-violet-400);
   --chart-5: var(--color-red-400);

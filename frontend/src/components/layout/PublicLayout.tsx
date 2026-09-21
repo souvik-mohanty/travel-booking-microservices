@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Logo } from '@/components/common/Logo'
 import { Button } from '@/components/ui/button'
 
 const NAV_LINKS = [
@@ -15,11 +16,8 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <header className="relative border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="tf-gradient-bar absolute inset-x-0 top-0 h-0.5" />
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-          <Link
-            to="/"
-            className="tf-gradient-text text-lg font-bold tracking-tight transition-transform duration-200 hover:scale-[1.03]"
-          >
-            TourFlow
+          <Link to="/" aria-label="TourFlow home" className="transition-transform duration-200 hover:scale-[1.03]">
+            <Logo size={40} />
           </Link>
           <nav className="hidden gap-6 text-sm text-slate-600 md:flex dark:text-slate-400">
             {NAV_LINKS.map((link) => (

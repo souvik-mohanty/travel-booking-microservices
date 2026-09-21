@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="frontend/public/logo.png" alt="TourFlow logo" width="110" />
+</p>
+
 # TourFlow
 
 A full-stack travel and tour booking platform built as a set of Spring Boot microservices behind an API gateway, with a React + TypeScript single-page app. Tourists search and book tours and pay online; businesses publish tours and manage hotels and rooms; admins moderate the platform.

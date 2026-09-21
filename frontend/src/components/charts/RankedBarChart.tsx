@@ -18,7 +18,7 @@ export function RankedBarChart({ data }: { data: RankedBarDatum[] }) {
           formatter={(value) => formatMoney(Number(value))}
           contentStyle={{ borderRadius: 8, borderColor: 'var(--color-slate-200)', fontSize: 13 }}
         />
-        <Bar dataKey="value" fill="var(--color-green-600)" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="value" fill="var(--color-orange-500)" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

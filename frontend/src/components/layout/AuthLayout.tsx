@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import { Logo } from '@/components/common/Logo'
 
 export function AuthLayout({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 px-4 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-orange-50 px-4 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
       <div className="animate-scale-in w-full max-w-sm overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
         <div className="tf-gradient-bar h-1" />
         <div className="p-8">
+          <Link to="/" aria-label="TourFlow home" className="mb-5 flex justify-center">
+            <Logo size={56} />
+          </Link>
           <h1 className="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
           {children}
         </div>

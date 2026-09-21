@@ -44,7 +44,7 @@ export function HomePage() {
   return (
     <PublicLayout>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
         <div className="tf-gradient-bar absolute inset-x-0 top-0 h-0.5" />
         <div className="mx-auto max-w-5xl px-6 py-20 text-center">
           <h1 className="animate-fade-in-up text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
